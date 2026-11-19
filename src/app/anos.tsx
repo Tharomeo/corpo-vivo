@@ -8,7 +8,6 @@ type Etapa = {
   id: Nivel | 'medio' | 'medicina';
   titulo: string;
   anos: string;
-  descricao: string;
   emoji: string;
   cor: string;
   corClara: string;
@@ -20,7 +19,6 @@ const ETAPAS: Etapa[] = [
     id: 'iniciais',
     titulo: 'Anos Iniciais',
     anos: '1º ao 5º ano',
-    descricao: 'O corpo em camadas: pele, músculos, ossos e órgãos',
     emoji: '🧍',
     cor: '#FF5D8F',
     corClara: '#FFE4EC',
@@ -29,7 +27,6 @@ const ETAPAS: Etapa[] = [
     id: 'finais',
     titulo: 'Anos Finais',
     anos: '6º ao 9º ano',
-    descricao: 'Mais detalhes, zoom até as células e o jogo das ervilhas',
     emoji: '🔬',
     cor: '#7B5CFA',
     corClara: '#ECE6FF',
@@ -38,7 +35,6 @@ const ETAPAS: Etapa[] = [
     id: 'medio',
     titulo: 'Ensino Médio',
     anos: '1ª à 3ª série',
-    descricao: 'Premium · em breve',
     emoji: '🧬',
     cor: '#2EC4B6',
     corClara: '#DDF6F3',
@@ -48,7 +44,6 @@ const ETAPAS: Etapa[] = [
     id: 'medicina',
     titulo: 'Medicina',
     anos: 'Graduação',
-    descricao: 'Premium · em breve',
     emoji: '🩺',
     cor: '#3A86FF',
     corClara: '#E1ECFF',
@@ -80,7 +75,6 @@ export default function EscolhaDaEtapa() {
             <View style={{ flex: 1 }}>
               <Text style={[styles.anos, { color: e.cor }]}>{e.anos}</Text>
               <Text style={styles.cardTitulo}>{e.titulo}</Text>
-              <Text style={styles.descricao}>{e.descricao}</Text>
             </View>
             {e.bloqueada ? (
               <Text style={styles.cadeado}>🔒</Text>
@@ -106,7 +100,6 @@ const styles = StyleSheet.create({
   emoji: { fontSize: 34 },
   anos: { fontSize: 12, fontWeight: '800', textTransform: 'uppercase', letterSpacing: 0.6 },
   cardTitulo: { fontSize: 20, fontWeight: '900', color: cores.texto, marginTop: 1 },
-  descricao: { fontSize: 14, color: cores.textoSuave, marginTop: 3, lineHeight: 19 },
   cadeado: { fontSize: 22 },
   seta: { width: 36, height: 36, borderRadius: 18, alignItems: 'center', justifyContent: 'center' },
   setaTexto: { color: cores.branco, fontSize: 26, fontWeight: '800', lineHeight: 28, marginTop: -2 },
