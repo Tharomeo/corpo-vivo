@@ -5,7 +5,13 @@ import { SISTEMAS, type Nivel, type SistemaId } from '../../data/sistemas';
 import { cores, sombra } from '../../theme';
 import type { Tema } from './tipos';
 
-type Props = { nivel: Nivel; contagem: Record<Tema, number>; onEscolher: (t: Tema) => void };
+type Props = {
+  nivel: Nivel;
+  contagem: Record<Tema, number>; // para 'tudo', é o total do banco
+  onEscolher: (t: Tema, quantidade?: number) => void;
+};
+
+const QUANTIDADES = [10, 25, 50];
 
 export function EscolhaTema({ nivel, contagem, onEscolher }: Props) {
   const sistemas = Object.keys(SISTEMAS) as SistemaId[];
@@ -23,17 +29,31 @@ export function EscolhaTema({ nivel, contagem, onEscolher }: Props) {
       </View>
 
       <ScrollView contentContainerStyle={styles.lista} showsVerticalScrollIndicator={false}>
-        <Pressable
-          onPress={() => onEscolher('tudo')}
-          style={({ pressed }) => [styles.tudo, pressed && { transform: [{ scale: 0.97 }] }]}
-        >
-          <Text style={styles.tudoEmoji}>🎯</Text>
-          <View style={{ flex: 1 }}>
-            <Text style={styles.tudoTitulo}>Corpo inteiro</Text>
-            <Text style={styles.tudoTexto}>{contagem.tudo} perguntas misturadas</Text>
+        <View style={styles.tudo}>
+          <View style={styles.tudoTopo}>
+            <Text style={styles.tudoEmoji}>🎯</Text>
+            <View style={{ flex: 1 }}>
+              <Text style={styles.tudoTitulo}>Corpo inteiro</Text>
+              <Text style={styles.tudoTexto}>Perguntas de todos os sistemas. Quantas?</Text>
+            </View>
           </View>
-          <Text style={styles.tudoSeta}>›</Text>
-        </Pressable>
+          <View style={styles.qtds}>
+            {QUANTIDADES.map((q) => {
+              const disponivel = q <= contagem.tudo;
+              return (
+                <Pressable
+                  key={q}
+                  disabled={!disponivel}
+                  onPress={() => onEscolher('tudo', q)}
+                  style={({ pressed }) => [styles.qtd, !disponivel && { opacity: 0.4 }, pressed && { transform: [{ scale: 0.94 }] }]}
+                >
+                  <Text style={styles.qtdNumero}>{q}</Text>
+                  <Text style={styles.qtdLabel}>perguntas</Text>
+                </Pressable>
+              );
+            })}
+          </View>
+        </View>
 
         <View style={styles.grade}>
           {sistemas.map((id) => {
@@ -68,11 +88,15 @@ const styles = StyleSheet.create({
   titulo: { fontSize: 26, fontWeight: '900', color: cores.texto },
   subtitulo: { fontSize: 14, fontWeight: '600', color: cores.textoSuave },
   lista: { padding: 20, paddingBottom: 48, gap: 16 },
-  tudo: { flexDirection: 'row', alignItems: 'center', gap: 14, backgroundColor: cores.roxo, borderRadius: 26, padding: 20, ...sombra },
+  tudo: { backgroundColor: cores.roxo, borderRadius: 26, padding: 20, ...sombra },
+  tudoTopo: { flexDirection: 'row', alignItems: 'center', gap: 14 },
+  qtds: { flexDirection: 'row', gap: 10, marginTop: 16 },
+  qtd: { flex: 1, backgroundColor: cores.branco, borderRadius: 18, paddingVertical: 12, alignItems: 'center' },
+  qtdNumero: { fontSize: 24, fontWeight: '900', color: cores.roxo },
+  qtdLabel: { fontSize: 12, fontWeight: '700', color: cores.textoSuave },
   tudoEmoji: { fontSize: 40 },
   tudoTitulo: { fontSize: 20, fontWeight: '900', color: cores.branco },
   tudoTexto: { fontSize: 14, fontWeight: '600', color: cores.branco, opacity: 0.85, marginTop: 2 },
-  tudoSeta: { fontSize: 34, color: cores.branco, fontWeight: '800' },
   grade: { flexDirection: 'row', flexWrap: 'wrap', gap: 12 },
   tema: { width: '48%', flexGrow: 1, borderRadius: 24, padding: 16, minHeight: 130 },
   temaEmojiBox: { width: 48, height: 48, borderRadius: 16, backgroundColor: cores.branco, alignItems: 'center', justifyContent: 'center', marginBottom: 10 },

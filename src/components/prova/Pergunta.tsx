@@ -23,21 +23,23 @@ type Props = {
 // A tela pai usa key={questao.id}, então cada pergunta nasce com o estado limpo.
 export function Pergunta({ item, numero, total, onResponder, onProxima, onSair }: Props) {
   const insets = useSafeAreaInsets();
+  // Duas etapas para evitar toque acidental: marcar uma opção e depois confirmar.
+  const [marcada, setMarcada] = useState<number | null>(null);
   const [escolhida, setEscolhida] = useState<number | null>(null);
   const [aparecer] = useState(() => new Animated.Value(0));
   const sistema = SISTEMAS[item.questao.sistema];
   const respondeu = escolhida !== null;
   const acertou = escolhida === item.correta;
 
-  const escolher = (i: number) => {
-    if (respondeu) return;
-    setEscolhida(i);
-    onResponder(i);
+  const confirmar = () => {
+    if (respondeu || marcada === null) return;
+    setEscolhida(marcada);
+    onResponder(marcada);
     Animated.spring(aparecer, { toValue: 1, useNativeDriver: true, friction: 7 }).start();
   };
 
   const estiloOpcao = (i: number) => {
-    if (!respondeu) return null;
+    if (!respondeu) return i === marcada ? { borderColor: sistema.cor, backgroundColor: sistema.corClara } : null;
     if (i === item.correta) return { backgroundColor: VERDE_CLARO, borderColor: VERDE };
     if (i === escolhida) return { backgroundColor: VERMELHO_CLARO, borderColor: VERMELHO };
     return { opacity: 0.45 };
@@ -77,7 +79,7 @@ export function Pergunta({ item, numero, total, onResponder, onProxima, onSair }
           {item.opcoes.map((texto, i) => (
             <Pressable
               key={i}
-              onPress={() => escolher(i)}
+              onPress={() => setMarcada(i)}
               disabled={respondeu}
               style={({ pressed }) => [styles.opcao, estiloOpcao(i), pressed && { transform: [{ scale: 0.98 }] }]}
             >
@@ -107,14 +109,23 @@ export function Pergunta({ item, numero, total, onResponder, onProxima, onSair }
         )}
       </ScrollView>
 
-      {respondeu && (
+      {(marcada !== null || respondeu) && (
         <View style={[styles.rodape, { paddingBottom: insets.bottom + 16 }]}>
-          <Pressable
-            onPress={onProxima}
-            style={({ pressed }) => [styles.botao, { backgroundColor: acertou ? VERDE : cores.roxo }, pressed && { transform: [{ scale: 0.97 }] }]}
-          >
-            <Text style={styles.botaoTexto}>{numero === total ? 'Ver resultado' : 'Próxima'}</Text>
-          </Pressable>
+          {respondeu ? (
+            <Pressable
+              onPress={onProxima}
+              style={({ pressed }) => [styles.botao, { backgroundColor: acertou ? VERDE : cores.roxo }, pressed && { transform: [{ scale: 0.97 }] }]}
+            >
+              <Text style={styles.botaoTexto}>{numero === total ? 'Ver resultado' : 'Próxima'}</Text>
+            </Pressable>
+          ) : (
+            <Pressable
+              onPress={confirmar}
+              style={({ pressed }) => [styles.botao, { backgroundColor: sistema.cor }, pressed && { transform: [{ scale: 0.97 }] }]}
+            >
+              <Text style={styles.botaoTexto}>Confirmar resposta</Text>
+            </Pressable>
+          )}
         </View>
       )}
     </SafeAreaView>

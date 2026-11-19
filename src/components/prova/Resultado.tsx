@@ -1,11 +1,13 @@
+import { router } from 'expo-router';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
-import { SISTEMAS } from '../../data/sistemas';
+import { ORGAOS, SISTEMAS, type Nivel } from '../../data/sistemas';
 import { cores, sombra } from '../../theme';
 import type { Resposta } from './tipos';
 
 type Props = {
   respostas: Resposta[];
+  nivel: Nivel;
   onDeNovo: () => void;
   onOutroTema: () => void;
   onVoltarCorpo: () => void;
@@ -18,7 +20,7 @@ function avaliacao(pct: number) {
   return { emoji: '📚', titulo: 'Bora revisar e tentar de novo', cor: '#FF5D8F', estrelas: 0 };
 }
 
-export function Resultado({ respostas, onDeNovo, onOutroTema, onVoltarCorpo }: Props) {
+export function Resultado({ respostas, nivel, onDeNovo, onOutroTema, onVoltarCorpo }: Props) {
   const insets = useSafeAreaInsets();
   const total = respostas.length;
   const acertos = respostas.filter((r) => r.escolhida === r.item.correta).length;
@@ -36,8 +38,8 @@ export function Resultado({ respostas, onDeNovo, onOutroTema, onVoltarCorpo }: P
           </Text>
           <View style={styles.estrelas}>
             {[0, 1, 2].map((i) => (
-              <Text key={i} style={[styles.estrela, i >= a.estrelas && { opacity: 0.3 }]}>
-                ⭐
+              <Text key={i} style={[styles.estrela, { color: i < a.estrelas ? cores.branco : 'rgba(43,35,80,0.18)' }]}>
+                ★
               </Text>
             ))}
           </View>
@@ -56,6 +58,14 @@ export function Resultado({ respostas, onDeNovo, onOutroTema, onVoltarCorpo }: P
                   <Text style={styles.revisaoPergunta}>{r.item.questao.pergunta}</Text>
                   <Text style={styles.revisaoCerta}>✓ {r.item.opcoes[r.item.correta]}</Text>
                   <Text style={styles.revisaoTexto}>{r.item.questao.explicacao}</Text>
+                  <Pressable
+                    onPress={() => router.push({ pathname: '/corpo', params: { nivel, foco: r.item.questao.orgao } })}
+                    style={({ pressed }) => [styles.verCorpo, { backgroundColor: s.corClara }, pressed && styles.apertado]}
+                  >
+                    <Text style={[styles.verCorpoTexto, { color: s.cor }]}>
+                      📖 Estudar: {ORGAOS[r.item.questao.orgao]?.nome ?? s.nome}
+                    </Text>
+                  </Pressable>
                 </View>
               );
             })}
@@ -86,13 +96,15 @@ const styles = StyleSheet.create({
   titulo: { fontSize: 22, fontWeight: '900', color: cores.texto, marginTop: 8, textAlign: 'center' },
   nota: { fontSize: 44, fontWeight: '900', color: cores.texto, marginTop: 4 },
   estrelas: { flexDirection: 'row', gap: 8, marginTop: 6 },
-  estrela: { fontSize: 32 },
+  estrela: { fontSize: 40, lineHeight: 44 },
   secao: { fontSize: 20, fontWeight: '900', color: cores.texto, marginTop: 14 },
   revisao: { backgroundColor: cores.branco, borderRadius: 22, padding: 16, ...sombra },
   revisaoSistema: { fontSize: 13, fontWeight: '800', marginBottom: 4 },
   revisaoPergunta: { fontSize: 16, fontWeight: '800', color: cores.texto, lineHeight: 22 },
   revisaoCerta: { fontSize: 15, fontWeight: '800', color: '#1FB5A6', marginTop: 8 },
   revisaoTexto: { fontSize: 14.5, color: cores.textoSuave, lineHeight: 21, marginTop: 4 },
+  verCorpo: { alignSelf: 'flex-start', borderRadius: 999, paddingVertical: 9, paddingHorizontal: 14, marginTop: 12 },
+  verCorpoTexto: { fontSize: 14, fontWeight: '900' },
   botoes: { gap: 12, marginTop: 16 },
   botao: { borderRadius: 999, paddingVertical: 17, alignItems: 'center', ...sombra },
   botaoClaro: { backgroundColor: cores.branco },

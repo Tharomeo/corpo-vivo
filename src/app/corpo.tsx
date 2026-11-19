@@ -18,7 +18,16 @@ const CAMADAS: { id: Camada; nome: string; cor: string }[] = [
 ];
 
 export default function Corpo() {
-  const params = useLocalSearchParams<{ nivel?: string }>();
+  const params = useLocalSearchParams<{ nivel?: string; foco?: string }>();
+  // "foco" vem da revisão do Me testar: abre direto o cartão daquela parte
+  const foco = params.foco && ORGAOS[params.foco] ? params.foco : null;
+  const camadaInicial: Camada = !foco
+    ? 'pele'
+    : ORGAOS[foco].sistema === 'tegumentar'
+      ? 'pele'
+      : ORGAOS[foco].sistema === 'muscular'
+        ? 'musculos'
+        : 'ossos';
   const nivel: Nivel = params.nivel === 'finais' ? 'finais' : 'iniciais';
   // Itens do menu do topo. O jogo das ervilhas (genética) é dos Anos Finais.
   const menu = [
@@ -28,8 +37,8 @@ export default function Corpo() {
   const insets = useSafeAreaInsets();
 
   const scene = useRef<BodyViewHandle>(null);
-  const [camada, setCamada] = useState<Camada>('pele');
-  const [selecionado, setSelecionado] = useState<string | null>(null);
+  const [camada, setCamada] = useState<Camada>(camadaInicial);
+  const [selecionado, setSelecionado] = useState<string | null>(foco);
   const [status, setStatus] = useState<'carregando' | 'pronto' | 'erro'>('carregando');
 
   const trocarCamada = (c: Camada) => {
@@ -48,6 +57,7 @@ export default function Corpo() {
       if (msg.type === 'ready') {
         setStatus('pronto');
         scene.current?.run(`setLayer('${camada}');`);
+        if (selecionado) scene.current?.run(`highlight('${ORGAOS[selecionado].sistema}');`);
       } else if (msg.type === 'error') {
         setStatus('erro');
       } else if (msg.type === 'tap') {
@@ -59,7 +69,7 @@ export default function Corpo() {
         }
       }
     },
-    [camada],
+    [camada, selecionado],
   );
 
   return (

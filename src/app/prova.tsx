@@ -8,10 +8,8 @@ import { QUESTOES, type Questao } from '../data/questoes';
 import { SISTEMAS, type Nivel, type SistemaId } from '../data/sistemas';
 import { embaralhar } from '../utils/embaralhar';
 
-const LIMITE_TUDO = 10;
-
-function prepararRodada(banco: Questao[], tema: Tema): QuestaoNaTela[] {
-  const escolhidas = tema === 'tudo' ? embaralhar(banco).slice(0, LIMITE_TUDO) : embaralhar(banco.filter((q) => q.sistema === tema));
+function prepararRodada(banco: Questao[], tema: Tema, quantidade: number): QuestaoNaTela[] {
+  const escolhidas = tema === 'tudo' ? embaralhar(banco).slice(0, quantidade) : embaralhar(banco.filter((q) => q.sistema === tema));
   return escolhidas.map((questao) => {
     const ordem = embaralhar([0, 1, 2, 3]);
     return { questao, opcoes: ordem.map((i) => questao.opcoes[i]), correta: ordem.indexOf(0) };
@@ -24,20 +22,22 @@ export default function Prova() {
   const banco = useMemo(() => QUESTOES.filter((q) => q.nivel === nivel), [nivel]);
 
   const contagem = useMemo(() => {
-    const c = { tudo: Math.min(LIMITE_TUDO, banco.length) } as Record<Tema, number>;
+    const c = { tudo: banco.length } as Record<Tema, number>;
     (Object.keys(SISTEMAS) as SistemaId[]).forEach((s) => (c[s] = banco.filter((q) => q.sistema === s).length));
     return c;
   }, [banco]);
 
   const [tema, setTema] = useState<Tema | null>(null);
+  const [quantidade, setQuantidade] = useState(10);
   const [rodada, setRodada] = useState<QuestaoNaTela[]>([]);
   const [indice, setIndice] = useState(0);
   const [respostas, setRespostas] = useState<Resposta[]>([]);
   const [terminou, setTerminou] = useState(false);
 
-  const comecar = (t: Tema) => {
+  const comecar = (t: Tema, qtd = quantidade) => {
     setTema(t);
-    setRodada(prepararRodada(banco, t));
+    setQuantidade(qtd);
+    setRodada(prepararRodada(banco, t, qtd));
     setIndice(0);
     setRespostas([]);
     setTerminou(false);
@@ -54,6 +54,7 @@ export default function Prova() {
     return (
       <Resultado
         respostas={respostas}
+        nivel={nivel}
         onDeNovo={() => comecar(tema)}
         onOutroTema={voltarParaTemas}
         onVoltarCorpo={() => router.back()}
