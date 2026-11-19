@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "corpo-vivo",
+    "name": "Corpo Vivo",
     "slug": "corpo-vivo",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -19,7 +19,13 @@
       "predictiveBackGestureEnabled": false
     },
     "web": {
-      "favicon": "./assets/favicon.png"
-    }
+      "favicon": "./assets/favicon.png",
+      "bundler": "metro",
+      "output": "single"
+    },
+    "plugins": [
+      "expo-router"
+    ],
+    "scheme": "corpovivo"
   }
 }
