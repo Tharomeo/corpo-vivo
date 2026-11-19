@@ -14,7 +14,7 @@ Protótipo da etapa 1:
 - [x] Toque numa parte: destaca o sistema e abre o cartão com a explicação
 - [x] Texto diferente para Anos Iniciais (simples) e Anos Finais (mais detalhe + "Saiba mais")
 - [ ] Zoom até a célula (Anos Finais)
-- [ ] Modo prova
+- [x] Me testar: questões por sistema ou do corpo inteiro, com explicação e resultado (`src/data/questoes.ts`)
 - [ ] Anotações
 - [ ] Mini-game das ervilhas de Mendel
 - [ ] Trocar o modelo estilizado pelo modelo anatômico do Z-Anatomy
