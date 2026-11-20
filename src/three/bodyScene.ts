@@ -5,7 +5,7 @@
 // Comunicação:
 //   WebView -> app: { type: 'ready' } | { type: 'tap', organ, system } | { type: 'tap', organ: null } | { type: 'error', message }
 //   app -> WebView: window.setLayer('pele' | 'musculos' | 'ossos'), window.highlight(system | null), window.resetView(),
-//                   window.focusOrgan(organId) (aproxima a câmera), window.centerOrgan(organId) (só centraliza), window.setBottomInset(0..1) (área coberta pelo cartão)
+//                   window.focusOrgan(organId) (aproxima a câmera), window.centerOrgan(organId) (só centraliza), window.focusSystem(sistema), window.setBottomInset(0..1) (área coberta pelo cartão)
 //
 // Atenção: este arquivo é uma String.raw, então o JS interno não pode usar crase nem "${".
 
@@ -567,6 +567,29 @@ function focusOrgan(id) {
   animateCamera(center, center.clone().add(dir.multiplyScalar(dist)));
 }
 
+// Enquadra todas as peças visíveis de um sistema (cartão de visão geral)
+function focusSystem(sys) {
+  focusedOrgan = null;
+  esconderBolhas();
+  applyHighlight();
+  const box = new THREE.Box3();
+  let found = false;
+  allMeshes.forEach(function (m) {
+    if (m.userData.system === sys && !m.userData.semFoco && !m.userData.ghost && isShown(m)) { box.expandByObject(m); found = true; }
+  });
+  if (!found) return;
+  const center = box.getCenter(new THREE.Vector3());
+  const size = box.getSize(new THREE.Vector3()).length();
+  const dist = Math.min(Math.max(size * 2.8, 1.2), 5.5);
+  const dir = camera.position.clone().sub(controls.target);
+  dir.y = 0;
+  if (dir.lengthSq() < 1e-6) dir.set(0, 0, 1);
+  dir.normalize();
+  dir.y = 0.12;
+  dir.normalize();
+  animateCamera(center, center.clone().add(dir.multiplyScalar(dist)));
+}
+
 // Ao abrir o cartão: sobe ou desce a câmera até a altura da parte tocada, sem mudar o zoom
 function centerOrgan(id) {
   const box = new THREE.Box3();
@@ -598,6 +621,7 @@ window.highlight = highlight;
 window.resetView = resetView;
 window.focusOrgan = focusOrgan;
 window.centerOrgan = centerOrgan;
+window.focusSystem = focusSystem;
 window.setBottomInset = setBottomInset;
 
 // ---------- Toque: distinguir "tocar" de "arrastar" ----------

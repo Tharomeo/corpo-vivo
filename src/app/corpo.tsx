@@ -4,8 +4,8 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { BodyView } from '../components/BodyView';
 import type { BodyViewHandle, SceneMessage } from '../components/bodyViewTypes';
-import { InfoCard } from '../components/InfoCard';
-import type { Nivel } from '../data/sistemas';
+import { ParteCard, SistemaCard, type CardAtual } from '../components/InfoCard';
+import type { Nivel, SistemaId } from '../data/sistemas';
 import { camadaDoSistema, ORGAOS } from '../data/sistemas';
 import { cores, sombra } from '../theme';
 
@@ -19,7 +19,7 @@ const CAMADAS: { id: Camada; nome: string; cor: string }[] = [
 
 export default function Corpo() {
   const params = useLocalSearchParams<{ nivel?: string; foco?: string }>();
-  // "foco" vem da revisão do Me testar: abre direto o cartão daquela parte
+  // "foco" vem da revisão do Me testar: abre direto o cartão daquela parte, com zoom
   const foco = params.foco && ORGAOS[params.foco] ? params.foco : null;
   const camadaInicial: Camada = foco ? camadaDoSistema(ORGAOS[foco].sistema) : 'pele';
   const nivel: Nivel = params.nivel === 'finais' ? 'finais' : 'iniciais';
@@ -32,34 +32,45 @@ export default function Corpo() {
 
   const scene = useRef<BodyViewHandle>(null);
   const [camada, setCamada] = useState<Camada>(camadaInicial);
-  const [selecionado, setSelecionado] = useState<string | null>(foco);
+  const [card, setCard] = useState<CardAtual | null>(foco ? { tipo: 'parte', orgao: foco, sistema: ORGAOS[foco].sistema } : null);
   const [status, setStatus] = useState<'carregando' | 'pronto' | 'erro'>('carregando');
+
+  const run = (js: string) => scene.current?.run(js);
 
   const trocarCamada = (c: Camada) => {
     setCamada(c);
-    setSelecionado(null);
-    scene.current?.run(`setLayer('${c}'); highlight(null);`);
+    setCard(null);
+    run(`setLayer('${c}'); highlight(null);`);
   };
 
-  // Com o cartão aberto, a imagem 3D sobe para o que está selecionado ficar visível
+  // Com um cartão aberto, a imagem 3D sobe para o que está em foco aparecer acima dele
+  const temCard = card !== null;
   useEffect(() => {
-    if (status === 'pronto') scene.current?.run(`setBottomInset(${selecionado ? 0.55 : 0});`);
-  }, [selecionado, status]);
+    if (status === 'pronto') scene.current?.run(`setBottomInset(${temCard ? 0.55 : 0});`);
+  }, [temCard, status]);
 
-  // Tag "Partes" do cartão: troca para a camada certa e aproxima a câmera
-  const focarParte = (orgaoId: string) => {
+  // Visão geral de um sistema: destaca e enquadra o sistema inteiro
+  const abrirSistema = (sistema: SistemaId, tocado: string | null) => {
+    const c = camadaDoSistema(sistema);
+    setCamada(c);
+    setCard({ tipo: 'sistema', sistema, tocado });
+    run(`setLayer('${c}'); highlight('${sistema}'); focusSystem('${sistema}');`);
+  };
+
+  // Parte específica: troca a camada se precisar, aproxima e abre o cartão da parte.
+  // "sistema" é o sistema de onde a pessoa veio, para o botão de voltar.
+  const abrirParte = (orgaoId: string, sistema: SistemaId) => {
     const destino = ORGAOS[orgaoId];
-    const atual = selecionado ? ORGAOS[selecionado] : null;
     if (!destino) return;
-    const novaCamada = camadaDoSistema(destino.sistema);
-    setCamada(novaCamada);
-    scene.current?.run(`setLayer('${novaCamada}'); highlight('${atual?.sistema ?? destino.sistema}'); focusOrgan('${orgaoId}');`);
+    const c = camadaDoSistema(destino.sistema);
+    setCamada(c);
+    setCard({ tipo: 'parte', orgao: orgaoId, sistema });
+    run(`setLayer('${c}'); highlight('${sistema}'); focusOrgan('${orgaoId}');`);
   };
 
   const fecharCard = () => {
-    setSelecionado(null);
-    // Volta a câmera para o corpo inteiro
-    scene.current?.run('highlight(null); resetView();');
+    setCard(null);
+    run('highlight(null); resetView();');
   };
 
   const onMessage = useCallback(
@@ -67,19 +78,22 @@ export default function Corpo() {
       if (msg.type === 'ready') {
         setStatus('pronto');
         scene.current?.run(`setLayer('${camada}');`);
-        if (selecionado) scene.current?.run(`highlight('${ORGAOS[selecionado].sistema}'); centerOrgan('${selecionado}');`);
+        if (card?.tipo === 'parte') scene.current?.run(`highlight('${card.sistema}'); focusOrgan('${card.orgao}');`);
       } else if (msg.type === 'error') {
         setStatus('erro');
       } else if (msg.type === 'tap') {
         if (msg.organ && ORGAOS[msg.organ]) {
-          setSelecionado(msg.organ);
-          scene.current?.run(`highlight('${ORGAOS[msg.organ].sistema}'); centerOrgan('${msg.organ}');`);
+          // Tocar no boneco abre a visão geral do sistema daquela parte
+          const sistema = ORGAOS[msg.organ].sistema;
+          setCard({ tipo: 'sistema', sistema, tocado: msg.organ });
+          scene.current?.run(`highlight('${sistema}'); focusSystem('${sistema}');`);
         } else {
-          fecharCard();
+          setCard(null);
+          scene.current?.run('highlight(null); resetView();');
         }
       }
     },
-    [camada, selecionado],
+    [camada, card],
   );
 
   return (
@@ -117,7 +131,7 @@ export default function Corpo() {
       )}
 
       {/* Rodapé: dica + camadas */}
-      {!selecionado && (
+      {!card && (
         <View style={[styles.rodape, { paddingBottom: insets.bottom + 16 }]}>
           <Text style={styles.dica}>Arraste para girar · pince para zoom · toque numa parte</Text>
           <View style={styles.camadas}>
@@ -140,7 +154,29 @@ export default function Corpo() {
         </View>
       )}
 
-      {selecionado && <InfoCard organ={selecionado} nivel={nivel} onClose={fecharCard} onFocarParte={focarParte} bottomInset={insets.bottom} />}
+      {card?.tipo === 'sistema' && (
+        <SistemaCard
+          sistema={card.sistema}
+          tocado={card.tocado}
+          nivel={nivel}
+          onParte={(id) => abrirParte(id, card.sistema)}
+          onClose={fecharCard}
+          topInset={insets.top}
+          bottomInset={insets.bottom}
+        />
+      )}
+      {card?.tipo === 'parte' && (
+        <ParteCard
+          orgao={card.orgao}
+          sistema={card.sistema}
+          nivel={nivel}
+          onParte={(id) => abrirParte(id, card.sistema)}
+          onVoltar={() => abrirSistema(card.sistema, null)}
+          onClose={fecharCard}
+          topInset={insets.top}
+          bottomInset={insets.bottom}
+        />
+      )}
     </View>
   );
 }

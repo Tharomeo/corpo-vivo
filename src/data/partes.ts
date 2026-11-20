@@ -1,0 +1,83 @@
+// Conteúdo extra do cartão de cada parte do corpo (aberto pelas tags).
+// "onde": onde fica. "curiosidade": um fato marcante, válido para todas as etapas.
+// Cada id precisa existir em ORGAOS (sistemas.ts).
+
+export type ExtraParte = { onde: string; curiosidade: string };
+
+export const EXTRAS: Record<string, ExtraParte> = {
+  // Pele
+  pele: { onde: 'Cobre todo o corpo, por fora.', curiosidade: 'Perdemos milhares de células de pele por minuto, e a camada de fora se renova em cerca de um mês.' },
+  epiderme: { onde: 'É a camada de fora da pele.', curiosidade: 'Na palma das mãos e na sola dos pés ela é bem mais grossa.' },
+  derme: { onde: 'Logo abaixo da epiderme.', curiosidade: 'A tinta da tatuagem fica na derme. Por isso ela não sai quando a epiderme descama.' },
+  hipoderme: { onde: 'Abaixo da derme, ligando a pele aos músculos.', curiosidade: 'Ajuda a dar forma ao corpo e funciona como reserva de energia.' },
+  pelos: { onde: 'Em quase toda a pele, menos nas palmas das mãos e nas solas dos pés.', curiosidade: 'Os cílios e as sobrancelhas ajudam a proteger os olhos de poeira e suor.' },
+  unhas: { onde: 'Na ponta dos dedos das mãos e dos pés.', curiosidade: 'As unhas das mãos crescem mais rápido que as dos pés.' },
+  glandulas_suor: { onde: 'Na derme, em quase todo o corpo.', curiosidade: 'Palmas das mãos e solas dos pés têm muitas delas: por isso suam tanto no nervoso.' },
+  glandulas_sebo: { onde: 'Na derme, junto dos pelos.', curiosidade: 'O rosto e o couro cabeludo têm muitas glândulas de sebo, por isso ficam oleosos mais rápido.' },
+  // Músculos
+  musculos_rosto: { onde: 'Na face: em volta dos olhos, da boca e na testa.', curiosidade: 'O músculo que fecha os olhos trabalha milhares de vezes por dia, a cada piscada.' },
+  musculos_tronco: { onde: 'No peito, nas costas e entre as costelas.', curiosidade: 'Os músculos das costas trabalham o dia inteiro para manter a postura, mesmo sentados.' },
+  peitoral: { onde: 'Na frente do peito, do esterno até o braço.', curiosidade: 'É um dos principais músculos usados na flexão de braço.' },
+  abdominais: { onde: 'Na frente da barriga.', curiosidade: 'O "tanquinho" é um músculo só, o reto do abdome, dividido por faixas de tendão.' },
+  deltoide: { onde: 'No ombro, cobrindo a articulação.', curiosidade: 'Tem formato de triângulo, como a letra grega delta, que deu origem ao nome.' },
+  biceps: { onde: 'Na frente do braço, entre o ombro e o cotovelo.', curiosidade: '"Bíceps" quer dizer "duas cabeças": ele se prende ao ombro em dois pontos.' },
+  antebraco: { onde: 'Entre o cotovelo e o punho.', curiosidade: 'Mexa os dedos e repare: os músculos que se movem estão no antebraço.' },
+  quadriceps: { onde: 'Na frente da coxa.', curiosidade: 'Está entre os músculos mais fortes do corpo.' },
+  gluteo: { onde: 'Na parte de trás do quadril.', curiosidade: 'O glúteo máximo costuma ser considerado o maior músculo do corpo.' },
+  panturrilha: { onde: 'Na parte de trás da perna, abaixo do joelho.', curiosidade: 'Ao contrair, aperta as veias e ajuda o sangue das pernas a voltar ao coração.' },
+  tendoes: { onde: 'Nas pontas dos músculos, onde eles se prendem nos ossos.', curiosidade: 'O tendão de Aquiles tem o nome de um herói grego que só podia ser ferido no calcanhar.' },
+  // Esqueleto
+  cranio: { onde: 'Na cabeça, em volta do encéfalo.', curiosidade: 'É formado por vários ossos unidos, como peças de um quebra-cabeça.' },
+  mandibula: { onde: 'Na parte de baixo do rosto.', curiosidade: 'É o osso mais forte do rosto.' },
+  coluna: { onde: 'No meio das costas, do pescoço até o quadril.', curiosidade: 'Suas curvas naturais funcionam como molas e amortecem os passos.' },
+  costelas: { onde: 'Em volta do peito.', curiosidade: 'Os dois últimos pares são chamados de "flutuantes" porque não se prendem ao esterno.' },
+  esterno: { onde: 'No meio do peito.', curiosidade: 'Na massagem cardíaca, as mãos se apoiam sobre ele.' },
+  clavicula: { onde: 'Na frente do ombro, abaixo do pescoço.', curiosidade: 'É um dos primeiros ossos a começar a se formar no bebê, ainda na barriga da mãe.' },
+  umero: { onde: 'No braço, entre o ombro e o cotovelo.', curiosidade: 'O "choquinho" de bater o cotovelo é um nervo que passa bem perto do úmero.' },
+  radio_ulna: { onde: 'No antebraço.', curiosidade: 'O rádio fica do lado do polegar e a ulna, do lado do dedo mínimo.' },
+  maos: { onde: 'Na mão e no punho.', curiosidade: 'As duas mãos juntas têm mais de um quarto de todos os ossos do corpo.' },
+  pelve: { onde: 'Na base do tronco, no quadril.', curiosidade: 'Quando estamos sentados, é ela que sustenta o peso do tronco.' },
+  femur: { onde: 'Na coxa.', curiosidade: 'Tem cerca de um quarto da altura da pessoa.' },
+  patela: { onde: 'Na frente do joelho.', curiosidade: 'No bebê ela ainda é de cartilagem e só endurece com os anos.' },
+  tibia_fibula: { onde: 'Na perna, entre o joelho e o tornozelo.', curiosidade: 'A tíbia é o segundo maior osso do corpo, depois do fêmur.' },
+  pes: { onde: 'Nos pés e tornozelos.', curiosidade: 'Os dois pés juntos têm 52 ossos.' },
+  cartilagens: { onde: 'Entre as vértebras, nas articulações, no nariz e nas orelhas.', curiosidade: 'A cartilagem quase não tem vasos sanguíneos, por isso se recupera devagar.' },
+  // Nervoso
+  encefalo: { onde: 'Dentro do crânio.', curiosidade: 'Gasta cerca de 20% da energia do corpo, mesmo pesando só uns 2% dele.' },
+  cerebelo: { onde: 'Na parte de trás e de baixo do crânio.', curiosidade: '"Cerebelo" quer dizer "pequeno cérebro".' },
+  tronco_encefalico: { onde: 'Na base do encéfalo, ligando-o à medula espinal.', curiosidade: 'Funciona até durante o sono mais profundo, mantendo a respiração e os batimentos.' },
+  medula: { onde: 'Dentro da coluna vertebral.', curiosidade: 'Tem mais ou menos a grossura de um dedo.' },
+  nervos: { onde: 'Por todo o corpo, saindo do encéfalo e da medula.', curiosidade: 'O nervo isquiático, que desce pela perna, é o maior nervo do corpo.' },
+  neuronios: { onde: 'Principalmente no encéfalo e na medula, com prolongamentos pelos nervos.', curiosidade: 'Alguns axônios passam de 1 metro, indo da medula até o pé.' },
+  // Circulatório
+  coracao: { onde: 'No peito, entre os pulmões, um pouco para a esquerda.', curiosidade: 'Bate mais de 100 mil vezes por dia.' },
+  aorta: { onde: 'Sai do coração, faz uma curva e desce em frente à coluna.', curiosidade: 'É mais ou menos da grossura de uma mangueira de jardim.' },
+  arterias: { onde: 'Por todo o corpo, saindo do coração.', curiosidade: 'O pulso que medimos no punho é a batida da artéria radial.' },
+  veias: { onde: 'Por todo o corpo, voltando ao coração.', curiosidade: 'Parecem azuis através da pele, mas o sangue delas é vermelho-escuro.' },
+  capilares: { onde: 'Em todos os tecidos, entre as artérias e as veias.', curiosidade: 'São tão finos que as hemácias passam em fila, uma de cada vez.' },
+  sangue: { onde: 'Dentro do coração e dos vasos sanguíneos.', curiosidade: 'Um adulto tem cerca de 5 litros de sangue.' },
+  // Respiratório
+  fossas_nasais: { onde: 'Dentro do nariz.', curiosidade: 'Com o nariz entupido a comida parece sem graça: o olfato ajuda a sentir o sabor.' },
+  faringe: { onde: 'No fundo da boca e do nariz: a garganta.', curiosidade: 'As amígdalas ficam ali e ajudam na defesa do corpo.' },
+  laringe: { onde: 'No pescoço, no começo da traqueia.', curiosidade: 'Na puberdade a laringe cresce e a voz fica mais grave, principalmente nos meninos.' },
+  traqueia: { onde: 'No pescoço e no peito, na frente do esôfago.', curiosidade: 'Tem de 16 a 20 anéis de cartilagem em forma de C.' },
+  bronquios: { onde: 'Dentro do peito, da traqueia até os pulmões.', curiosidade: 'Ramificados, parecem uma árvore de cabeça para baixo: a "árvore brônquica".' },
+  pulmoes: { onde: 'No peito, protegidos pelas costelas.', curiosidade: 'O pulmão direito tem três lobos e o esquerdo, só dois.' },
+  alveolos: { onde: 'No fim dos bronquíolos, dentro dos pulmões.', curiosidade: 'São centenas de milhões de alvéolos nos dois pulmões.' },
+  diafragma: { onde: 'Abaixo dos pulmões, separando o peito da barriga.', curiosidade: 'O soluço acontece quando o diafragma contrai de repente, sem a gente querer.' },
+  // Digestório
+  boca: { onde: 'No rosto: é o começo do tubo digestório.', curiosidade: 'Produzimos mais ou menos 1 litro de saliva por dia.' },
+  esofago: { onde: 'No pescoço e no peito, atrás da traqueia.', curiosidade: 'O alimento leva só alguns segundos para descer por ele.' },
+  estomago: { onde: 'Na parte de cima da barriga, do lado esquerdo.', curiosidade: 'Sua parede se renova constantemente, o que ajuda a protegê-lo do próprio ácido.' },
+  figado: { onde: 'Na parte de cima da barriga, do lado direito.', curiosidade: 'Consegue se regenerar e crescer de novo depois de perder uma parte.' },
+  vesicula: { onde: 'Embaixo do fígado, do lado direito.', curiosidade: 'Às vezes se formam pedras dentro dela, os cálculos biliares.' },
+  pancreas: { onde: 'Atrás do estômago.', curiosidade: 'No diabetes tipo 1, o pâncreas não produz insulina suficiente.' },
+  intestino_delgado: { onde: 'No meio da barriga, todo enrolado.', curiosidade: 'Com as vilosidades, a superfície de dentro é muito maior do que parece por fora.' },
+  intestino_grosso: { onde: 'Em volta do intestino delgado, como uma moldura.', curiosidade: 'Abriga trilhões de bactérias, muitas delas boas para a saúde.' },
+  // Urinário
+  rins: { onde: 'Na parte de trás da barriga, um de cada lado da coluna.', curiosidade: 'É possível viver bem com um rim só.' },
+  nefrons: { onde: 'Dentro dos rins.', curiosidade: 'Juntos, filtram todo o sangue do corpo várias vezes ao dia.' },
+  ureteres: { onde: 'Saem de cada rim e descem até a bexiga.', curiosidade: 'Cada um mede cerca de 25 a 30 centímetros.' },
+  bexiga: { onde: 'Na parte de baixo da barriga, atrás do osso do púbis.', curiosidade: 'Num adulto costuma guardar algo entre 400 e 600 mL de urina.' },
+  uretra: { onde: 'Sai da bexiga e leva a urina para fora do corpo.', curiosidade: 'É mais curta nas mulheres do que nos homens.' },
+};
