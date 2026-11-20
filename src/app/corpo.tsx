@@ -1,12 +1,12 @@
 import { router, useLocalSearchParams } from 'expo-router';
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { BodyView } from '../components/BodyView';
 import type { BodyViewHandle, SceneMessage } from '../components/bodyViewTypes';
 import { InfoCard } from '../components/InfoCard';
 import type { Nivel } from '../data/sistemas';
-import { ORGAOS } from '../data/sistemas';
+import { camadaDoSistema, ORGAOS } from '../data/sistemas';
 import { cores, sombra } from '../theme';
 
 type Camada = 'pele' | 'musculos' | 'ossos';
@@ -21,13 +21,7 @@ export default function Corpo() {
   const params = useLocalSearchParams<{ nivel?: string; foco?: string }>();
   // "foco" vem da revisão do Me testar: abre direto o cartão daquela parte
   const foco = params.foco && ORGAOS[params.foco] ? params.foco : null;
-  const camadaInicial: Camada = !foco
-    ? 'pele'
-    : ORGAOS[foco].sistema === 'tegumentar'
-      ? 'pele'
-      : ORGAOS[foco].sistema === 'muscular'
-        ? 'musculos'
-        : 'ossos';
+  const camadaInicial: Camada = foco ? camadaDoSistema(ORGAOS[foco].sistema) : 'pele';
   const nivel: Nivel = params.nivel === 'finais' ? 'finais' : 'iniciais';
   // Itens do menu do topo. O jogo das ervilhas (genética) é dos Anos Finais.
   const menu = [
@@ -47,9 +41,25 @@ export default function Corpo() {
     scene.current?.run(`setLayer('${c}'); highlight(null);`);
   };
 
+  // Com o cartão aberto, a imagem 3D sobe para o que está selecionado ficar visível
+  useEffect(() => {
+    if (status === 'pronto') scene.current?.run(`setBottomInset(${selecionado ? 0.55 : 0});`);
+  }, [selecionado, status]);
+
+  // Tag "Partes" do cartão: troca para a camada certa e aproxima a câmera
+  const focarParte = (orgaoId: string) => {
+    const destino = ORGAOS[orgaoId];
+    const atual = selecionado ? ORGAOS[selecionado] : null;
+    if (!destino) return;
+    const novaCamada = camadaDoSistema(destino.sistema);
+    setCamada(novaCamada);
+    scene.current?.run(`setLayer('${novaCamada}'); highlight('${atual?.sistema ?? destino.sistema}'); focusOrgan('${orgaoId}');`);
+  };
+
   const fecharCard = () => {
     setSelecionado(null);
-    scene.current?.run('highlight(null);');
+    // Volta a câmera para o corpo inteiro
+    scene.current?.run('highlight(null); resetView();');
   };
 
   const onMessage = useCallback(
@@ -57,13 +67,13 @@ export default function Corpo() {
       if (msg.type === 'ready') {
         setStatus('pronto');
         scene.current?.run(`setLayer('${camada}');`);
-        if (selecionado) scene.current?.run(`highlight('${ORGAOS[selecionado].sistema}');`);
+        if (selecionado) scene.current?.run(`highlight('${ORGAOS[selecionado].sistema}'); centerOrgan('${selecionado}');`);
       } else if (msg.type === 'error') {
         setStatus('erro');
       } else if (msg.type === 'tap') {
         if (msg.organ && ORGAOS[msg.organ]) {
           setSelecionado(msg.organ);
-          scene.current?.run(`highlight('${ORGAOS[msg.organ].sistema}');`);
+          scene.current?.run(`highlight('${ORGAOS[msg.organ].sistema}'); centerOrgan('${msg.organ}');`);
         } else {
           fecharCard();
         }
@@ -130,7 +140,7 @@ export default function Corpo() {
         </View>
       )}
 
-      {selecionado && <InfoCard organ={selecionado} nivel={nivel} onClose={fecharCard} bottomInset={insets.bottom} />}
+      {selecionado && <InfoCard organ={selecionado} nivel={nivel} onClose={fecharCard} onFocarParte={focarParte} bottomInset={insets.bottom} />}
     </View>
   );
 }

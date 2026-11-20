@@ -437,6 +437,47 @@ export const SISTEMAS: Record<SistemaId, Sistema> = {
   },
 };
 
+// Tags "Partes" do cartão que têm peça no modelo 3D: ao tocar, a câmera aproxima.
+// Partes sem peça própria ficam de fora (a tag aparece sem lupa).
+export const PARTE_ORGAO: Record<string, string> = {
+  'Músculos esqueléticos': 'quadriceps',
+  'Músculo liso': 'estomago',
+  'Músculo cardíaco': 'coracao',
+  Tendões: 'panturrilha',
+  Crânio: 'cranio',
+  'Coluna vertebral': 'coluna',
+  Costelas: 'costelas',
+  Esterno: 'esterno',
+  Pelve: 'pelve',
+  'Ossos dos membros': 'femur',
+  Articulações: 'patela',
+  Cartilagens: 'coluna',
+  Encéfalo: 'encefalo',
+  Cerebelo: 'cerebelo',
+  'Medula espinal': 'medula',
+  Nervos: 'nervos',
+  Coração: 'coracao',
+  Artérias: 'arterias',
+  Traqueia: 'traqueia',
+  Brônquios: 'traqueia',
+  Pulmões: 'pulmoes',
+  Alvéolos: 'pulmoes',
+  Esôfago: 'esofago',
+  Estômago: 'estomago',
+  'Intestino delgado': 'intestino_delgado',
+  'Intestino grosso': 'intestino_grosso',
+  Fígado: 'figado',
+  Rins: 'rins',
+  Ureteres: 'rins',
+  Bexiga: 'bexiga',
+  Néfrons: 'rins',
+};
+
+// Em qual camada do modelo cada sistema aparece
+export function camadaDoSistema(s: SistemaId): 'pele' | 'musculos' | 'ossos' {
+  return s === 'tegumentar' ? 'pele' : s === 'muscular' ? 'musculos' : 'ossos';
+}
+
 export type Orgao = {
   nome: string;
   sistema: SistemaId;

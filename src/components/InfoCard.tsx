@@ -1,11 +1,17 @@
 import { useEffect, useState, type ReactNode } from 'react';
 import { Animated, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { ORGAOS, SISTEMAS, type Nivel } from '../data/sistemas';
+import { ORGAOS, PARTE_ORGAO, SISTEMAS, type Nivel } from '../data/sistemas';
 import { cores, sombra } from '../theme';
 
-type Props = { organ: string; nivel: Nivel; onClose: () => void; bottomInset: number };
+type Props = {
+  organ: string;
+  nivel: Nivel;
+  onClose: () => void;
+  onFocarParte: (orgaoId: string) => void;
+  bottomInset: number;
+};
 
-export function InfoCard({ organ, nivel, onClose, bottomInset }: Props) {
+export function InfoCard({ organ, nivel, onClose, onFocarParte, bottomInset }: Props) {
   const orgao = ORGAOS[organ];
   const sistema = orgao ? SISTEMAS[orgao.sistema] : null;
   const [subir] = useState(() => new Animated.Value(0));
@@ -64,12 +70,35 @@ export function InfoCard({ organ, nivel, onClose, bottomInset }: Props) {
         </Secao>
 
         <Secao titulo="Partes">
+          {sistema.partes.some((p) => PARTE_ORGAO[p]) && <Text style={styles.dicaPartes}>Toque numa parte com 🔍 para ver no corpo</Text>}
           <View style={styles.partes}>
-            {sistema.partes.map((p) => (
-              <View key={p} style={[styles.parte, { backgroundColor: sistema.corClara }]}>
-                <Text style={[styles.parteTexto, { color: sistema.cor }]}>{p}</Text>
-              </View>
-            ))}
+            {sistema.partes.map((p) => {
+              const alvo = PARTE_ORGAO[p];
+              if (!alvo) {
+                return (
+                  <View key={p} style={[styles.parte, { backgroundColor: sistema.corClara }]}>
+                    <Text style={[styles.parteTexto, { color: sistema.cor }]}>{p}</Text>
+                  </View>
+                );
+              }
+              return (
+                <Pressable
+                  key={p}
+                  onPress={() => {
+                    setExpandido(false);
+                    onFocarParte(alvo);
+                  }}
+                  style={({ pressed }) => [
+                    styles.parte,
+                    styles.parteClicavel,
+                    { borderColor: sistema.cor, backgroundColor: sistema.corClara },
+                    pressed && { transform: [{ scale: 0.94 }] },
+                  ]}
+                >
+                  <Text style={[styles.parteTexto, { color: sistema.cor }]}>🔍 {p}</Text>
+                </Pressable>
+              );
+            })}
           </View>
         </Secao>
 
@@ -145,6 +174,8 @@ const styles = StyleSheet.create({
   partes: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   parte: { borderRadius: 999, paddingVertical: 6, paddingHorizontal: 12 },
   parteTexto: { fontSize: 13, fontWeight: '800' },
+  parteClicavel: { borderWidth: 1.5 },
+  dicaPartes: { fontSize: 12.5, fontWeight: '700', color: cores.textoSuave, marginBottom: 8, marginTop: -2 },
   item: { flexDirection: 'row', gap: 10, marginBottom: 8 },
   ponto: { width: 8, height: 8, borderRadius: 4, marginTop: 8 },
   itemTexto: { flex: 1, fontSize: 15, color: cores.textoSuave, lineHeight: 22 },

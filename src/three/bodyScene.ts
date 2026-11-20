@@ -4,7 +4,8 @@
 //
 // Comunicação:
 //   WebView -> app: { type: 'ready' } | { type: 'tap', organ, system } | { type: 'tap', organ: null } | { type: 'error', message }
-//   app -> WebView: window.setLayer('pele' | 'musculos' | 'ossos'), window.highlight(system | null), window.resetView()
+//   app -> WebView: window.setLayer('pele' | 'musculos' | 'ossos'), window.highlight(system | null), window.resetView(),
+//                   window.focusOrgan(organId) (aproxima a câmera), window.centerOrgan(organId) (só centraliza), window.setBottomInset(0..1) (área coberta pelo cartão)
 //
 // Atenção: este arquivo é uma String.raw, então o JS interno não pode usar crase nem "${".
 
@@ -301,6 +302,7 @@ const animated = { heart: null, lungs: [] };
 // ---------- Camada visível e destaque ----------
 let currentLayer = 'pele';
 let currentHighlight = null;
+let focusedOrgan = null; // parte aproximada pelas tags do cartão
 
 function setLayer(name) {
   if (!layers[name]) return;
@@ -312,16 +314,19 @@ function setLayer(name) {
 function applyHighlight() {
   allMeshes.forEach(function (m) {
     const mat = m.material, u = m.userData;
-    const on = !currentHighlight || u.system === currentHighlight;
+    const focado = focusedOrgan && u.organ === focusedOrgan;
+    // Com uma parte em foco, o resto do sistema fica meio apagado e o resto do corpo quase some
+    const on = focusedOrgan ? focado : !currentHighlight || u.system === currentHighlight;
+    const meio = focusedOrgan && !focado && u.system === currentHighlight;
     if (on) {
       mat.transparent = u.baseTransparent;
       mat.opacity = u.baseOpacity;
       mat.depthWrite = !u.baseTransparent;
-      mat.emissive.setHex(currentHighlight ? mat.color.getHex() : 0x000000);
-      mat.emissiveIntensity = currentHighlight ? 0.28 : 0;
+      mat.emissive.setHex(currentHighlight || focado ? mat.color.getHex() : 0x000000);
+      mat.emissiveIntensity = focado ? 0.45 : currentHighlight ? 0.28 : 0;
     } else {
       mat.transparent = true;
-      mat.opacity = Math.min(u.baseOpacity, 0.14);
+      mat.opacity = Math.min(u.baseOpacity, meio ? 0.35 : 0.1);
       mat.depthWrite = false;
       mat.emissive.setHex(0x000000);
     }
@@ -329,17 +334,76 @@ function applyHighlight() {
   });
 }
 
-function highlight(system) { currentHighlight = system || null; applyHighlight(); }
+function highlight(system) {
+  currentHighlight = system || null;
+  focusedOrgan = null;
+  applyHighlight();
+}
+
+// Movimento suave da câmera
+let camAnim = null;
+function animateCamera(toTarget, toPos) {
+  controls.autoRotate = false;
+  camAnim = {
+    fromT: controls.target.clone(), toT: toTarget,
+    fromP: camera.position.clone(), toP: toPos,
+    start: performance.now(), dur: 750
+  };
+}
+
+function focusOrgan(id) {
+  const box = new THREE.Box3();
+  let found = false;
+  allMeshes.forEach(function (m) {
+    if (m.userData.organ === id && isShown(m)) { box.expandByObject(m); found = true; }
+  });
+  if (!found) return;
+  focusedOrgan = id;
+  applyHighlight();
+  const center = box.getCenter(new THREE.Vector3());
+  const size = box.getSize(new THREE.Vector3()).length();
+  const dist = Math.min(Math.max(size * 5, 1.4), 4.5);
+  // Mantém o ângulo atual na horizontal, olhando levemente de cima
+  const dir = camera.position.clone().sub(controls.target);
+  dir.y = 0;
+  if (dir.lengthSq() < 1e-6) dir.set(0, 0, 1);
+  dir.normalize();
+  dir.y = 0.18;
+  dir.normalize();
+  animateCamera(center, center.clone().add(dir.multiplyScalar(dist)));
+}
+
+// Ao abrir o cartão: sobe ou desce a câmera até a altura da parte tocada, sem mudar o zoom
+function centerOrgan(id) {
+  const box = new THREE.Box3();
+  let found = false;
+  allMeshes.forEach(function (m) {
+    if (m.userData.organ === id && isShown(m)) { box.expandByObject(m); found = true; }
+  });
+  if (!found) return;
+  const y = box.getCenter(new THREE.Vector3()).y;
+  const toT = new THREE.Vector3(controls.target.x, y, controls.target.z);
+  const toP = camera.position.clone().add(toT.clone().sub(controls.target));
+  animateCamera(toT, toP);
+}
 
 function resetView() {
-  controls.target.copy(HOME_TARGET);
-  camera.position.copy(HOME_POS);
-  controls.update();
+  focusedOrgan = null;
+  applyHighlight();
+  animateCamera(HOME_TARGET.clone(), HOME_POS.clone());
 }
+
+// O cartão cobre a parte de baixo da tela: desloca a imagem para cima,
+// para o que está em foco aparecer no espaço livre.
+let insetTarget = 0, insetNow = 0;
+function setBottomInset(frac) { insetTarget = Math.min(Math.max(frac || 0, 0), 0.8); }
 
 window.setLayer = setLayer;
 window.highlight = highlight;
 window.resetView = resetView;
+window.focusOrgan = focusOrgan;
+window.centerOrgan = centerOrgan;
+window.setBottomInset = setBottomInset;
 
 // ---------- Toque: distinguir "tocar" de "arrastar" ----------
 const raycaster = new THREE.Raycaster();
@@ -395,6 +459,19 @@ function frame() {
     popMesh.scale.copy(baseScale.get(popMesh)).multiplyScalar(k);
     if (p >= 1) popMesh = null;
   }
+  if (camAnim) {
+    const k = Math.min((performance.now() - camAnim.start) / camAnim.dur, 1);
+    const e = k < 0.5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2;
+    controls.target.lerpVectors(camAnim.fromT, camAnim.toT, e);
+    camera.position.lerpVectors(camAnim.fromP, camAnim.toP, e);
+    if (k >= 1) camAnim = null;
+  }
+  if (Math.abs(insetTarget - insetNow) > 0.001) {
+    insetNow += (insetTarget - insetNow) * 0.15;
+    const W = window.innerWidth, H = window.innerHeight;
+    if (insetNow < 0.002) camera.clearViewOffset();
+    else camera.setViewOffset(W, H, 0, (insetNow * H) / 2, W, H);
+  }
   controls.update();
   renderer.render(scene, camera);
   requestAnimationFrame(frame);
@@ -402,6 +479,7 @@ function frame() {
 
 window.addEventListener('resize', function () {
   camera.aspect = window.innerWidth / window.innerHeight;
+  insetNow = insetTarget + 0.01; // força recalcular o deslocamento no próximo quadro
   camera.updateProjectionMatrix();
   renderer.setSize(window.innerWidth, window.innerHeight);
 });
