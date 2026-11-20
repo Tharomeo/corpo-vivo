@@ -123,7 +123,7 @@ function place(group, geo, color, pos, info, opts) {
   if (pos) m.position.set(pos[0], pos[1], pos[2]);
   if (opts.scale) m.scale.set(opts.scale[0], opts.scale[1], opts.scale[2]);
   if (opts.rot) m.rotation.set(opts.rot[0], opts.rot[1], opts.rot[2]);
-  m.userData = { organ: info[0], system: info[1], ghost: !!opts.ghost, baseOpacity: m.material.opacity, baseTransparent: m.material.transparent };
+  m.userData = { organ: info[0], system: info[1], ghost: !!opts.ghost, semFoco: !!opts.semFoco, baseOpacity: m.material.opacity, baseTransparent: m.material.transparent };
   group.add(m);
   allMeshes.push(m);
   return m;
@@ -170,6 +170,11 @@ function sx(p, s) { return [p[0] * s, p[1], p[2]]; }
     limb(g, sx(KN, s), sx(AN, s), 0.06, c, i);
     place(g, new THREE.BoxGeometry(0.085, 0.06, 0.2, 2, 2, 2), c, [0.11 * s, 0.035, 0.045], i);
   });
+  // Unhas das mãos e dos pés
+  both(function (s) {
+    place(g, new THREE.BoxGeometry(0.024, 0.018, 0.006), 0xFF9EC4, [0.31 * s, 0.76, 0.037], ['unhas', 'tegumentar'], { semFoco: s < 0 });
+    place(g, new THREE.BoxGeometry(0.045, 0.006, 0.03), 0xFF9EC4, [0.11 * s, 0.067, 0.122], ['unhas', 'tegumentar'], { semFoco: true });
+  });
   // olhos e boca (só decoração)
   both(function (s) {
     place(g, sphere(0.014), 0x3A2E5C, [0.04 * s, 1.645, 0.112], i);
@@ -197,6 +202,8 @@ function sx(p, s) { return [p[0] * s, p[1], p[2]]; }
     limb(g, sx(KN, s), sx(AN, s), 0.055, c, ['panturrilha', 'muscular']);
     limb(g, [0.11 * s, 0.42, -0.025], [0.11 * s, 0.26, -0.025], 0.04, c2, ['panturrilha', 'muscular']);
     place(g, new THREE.BoxGeometry(0.08, 0.055, 0.19), c, [0.11 * s, 0.035, 0.045], ['panturrilha', 'muscular']);
+    // Tendão calcâneo (de Aquiles), por trás do tornozelo
+    limb(g, [0.11 * s, 0.25, -0.05], [0.11 * s, 0.045, -0.06], 0.009, 0xF4EEE2, ['tendoes', 'muscular']);
   });
   for (let r = 0; r < 3; r++) {
     both(function (s) {
@@ -219,6 +226,8 @@ function sx(p, s) { return [p[0] * s, p[1], p[2]]; }
     const geo = new THREE.TorusGeometry(0.016, 0.008, 8, 18);
     geo.rotateX(Math.PI / 2);
     place(g, geo, c, [0, y, -0.065], ['coluna', 'esqueletico']);
+    // Disco de cartilagem entre uma vértebra e a próxima
+    if (k < 19) place(g, new THREE.CylinderGeometry(0.019, 0.019, 0.009, 18), 0x9FD8F0, [0, y + 0.0145, -0.065], ['cartilagens', 'esqueletico']);
   }
   // Costelas: arcos abertos na frente
   for (let k = 0; k < 7; k++) {
@@ -256,7 +265,8 @@ const animated = { heart: null, lungs: [] };
   // Nervoso
   place(g, sphere(0.085), COR.nervoso, [0, 1.665, 0.005], ['encefalo', 'nervoso'], { scale: [0.92, 0.82, 1.12] });
   place(g, sphere(0.035), 0xB98BF0, [0, 1.6, -0.055], ['cerebelo', 'nervoso'], { scale: [1.4, 0.8, 1] });
-  limb(g, [0, 1.56, -0.062], [0, 0.97, -0.065], 0.0075, COR.nervoso, ['medula', 'nervoso']);
+  limb(g, [0, 1.625, -0.015], [0, 1.565, -0.055], 0.014, 0xC2A3F5, ['tronco_encefalico', 'nervoso']);
+  limb(g, [0, 1.55, -0.062], [0, 0.97, -0.065], 0.0075, COR.nervoso, ['medula', 'nervoso']);
   both(function (s) {
     limb(g, [0.03 * s, 1.40, -0.05], sx(SH, s), 0.004, COR.nervoso, ['nervos', 'nervoso']);
     limb(g, [SH[0] * s, SH[1], 0.025], [EL[0] * s, EL[1], 0.025], 0.004, COR.nervoso, ['nervos', 'nervoso']);
@@ -266,9 +276,19 @@ const animated = { heart: null, lungs: [] };
     limb(g, [0.1 * s, 0.52, -0.03], [0.11 * s, 0.1, -0.03], 0.004, COR.nervoso, ['nervos', 'nervoso']);
   });
   // Respiratório
-  limb(g, [0, 1.52, 0.03], [0, 1.39, 0.03], 0.011, COR.respiratorio, ['traqueia', 'respiratorio']);
   both(function (s) {
-    limb(g, [0, 1.385, 0.03], [0.045 * s, 1.35, 0.02], 0.008, COR.respiratorio, ['traqueia', 'respiratorio']);
+    limb(g, [0.012 * s, 1.612, 0.1], [0.012 * s, 1.6, 0.045], 0.007, 0x7FD6F5, ['fossas_nasais', 'respiratorio']);
+  });
+  limb(g, [0, 1.6, 0.03], [0, 1.53, 0.012], 0.012, 0xF7A8C0, ['faringe', 'respiratorio']);
+  place(g, new THREE.CylinderGeometry(0.019, 0.015, 0.035, 18), 0x2F9FD0, [0, 1.512, 0.03], ['laringe', 'respiratorio']);
+  limb(g, [0, 1.49, 0.03], [0, 1.39, 0.03], 0.011, COR.respiratorio, ['traqueia', 'respiratorio']);
+  // Diafragma: cúpula de músculo abaixo dos pulmões
+  place(g, new THREE.SphereGeometry(0.13, 36, 12, 0, Math.PI * 2, 0, Math.PI / 2.3), 0xF48FA8, [0, 1.17, 0.0], ['diafragma', 'respiratorio'],
+    { scale: [1.15, 0.38, 0.85], mat: { side: THREE.DoubleSide } });
+  both(function (s) {
+    limb(g, [0, 1.385, 0.03], [0.045 * s, 1.35, 0.02], 0.008, 0x1588B8, ['bronquios', 'respiratorio']);
+    limb(g, [0.045 * s, 1.35, 0.02], [0.08 * s, 1.3, 0.035], 0.005, 0x1588B8, ['bronquios', 'respiratorio']);
+    limb(g, [0.045 * s, 1.35, 0.02], [0.07 * s, 1.24, 0.03], 0.005, 0x1588B8, ['bronquios', 'respiratorio']);
     const lung = place(g, sphere(0.07), COR.respiratorio, [0.075 * s, 1.29, 0.005], ['pulmoes', 'respiratorio'], { scale: [0.85, 1.45, 0.95] });
     animated.lungs.push(lung);
   });
@@ -277,6 +297,16 @@ const animated = { heart: null, lungs: [] };
     { scale: [1, 1.18, 0.9], rot: [0, 0, -0.45] });
   limb(g, [0.02, 1.29, 0.04], [0.0, 1.37, 0.0], 0.0095, COR.circulatorio, ['aorta', 'circulatorio']);
   limb(g, [0.0, 1.37, -0.02], [-0.012, 0.96, -0.035], 0.009, COR.circulatorio, ['aorta', 'circulatorio']);
+  // Veias (azul): voltam para o coração
+  const VEIA = 0x3D6FE0;
+  limb(g, [-0.03, 1.4, 0.0], [-0.012, 1.27, 0.04], 0.009, VEIA, ['veias', 'circulatorio']);
+  limb(g, [-0.03, 0.96, -0.02], [-0.012, 1.23, 0.035], 0.009, VEIA, ['veias', 'circulatorio']);
+  both(function (s) {
+    limb(g, [-0.03, 1.4, 0.0], [SH[0] * s, SH[1] - 0.03, 0.02], 0.0045, VEIA, ['veias', 'circulatorio']);
+    limb(g, [SH[0] * s, SH[1] - 0.03, 0.02], [WR[0] * s - 0.012 * s, WR[1], 0.025], 0.004, VEIA, ['veias', 'circulatorio']);
+    limb(g, [-0.03, 0.96, -0.02], [HP[0] * s - 0.012 * s, 0.88, 0.035], 0.005, VEIA, ['veias', 'circulatorio']);
+    limb(g, [HP[0] * s - 0.012 * s, 0.88, 0.035], [0.11 * s, 0.1, 0.03], 0.0045, VEIA, ['veias', 'circulatorio']);
+  });
   both(function (s) {
     limb(g, [0.02 * s, 1.37, 0.0], [SH[0] * s, SH[1] - 0.02, -0.02], 0.005, COR.circulatorio, ['arterias', 'circulatorio']);
     limb(g, [SH[0] * s, SH[1] - 0.02, -0.02], [WR[0] * s + 0.01 * s, WR[1], -0.01], 0.0045, COR.circulatorio, ['arterias', 'circulatorio']);
@@ -284,6 +314,10 @@ const animated = { heart: null, lungs: [] };
     limb(g, [HP[0] * s, 0.88, 0.02], [0.095 * s, 0.1, 0.02], 0.005, COR.circulatorio, ['arterias', 'circulatorio']);
   });
   // Digestório
+  place(g, sphere(0.026), 0xF06A86, [0, 1.565, 0.05], ['boca', 'digestorio'], { scale: [1, 0.4, 1.4] });
+  place(g, new THREE.TorusGeometry(0.03, 0.006, 8, 24, Math.PI), 0xFFFFFF, [0, 1.578, 0.055], ['boca', 'digestorio'], { rot: [Math.PI / 2, 0, Math.PI] });
+  limb(g, [0.0, 1.09, 0.0], [0.095, 1.105, 0.005], 0.013, 0xF5C46B, ['pancreas', 'digestorio']);
+  place(g, sphere(0.015), 0x79C97E, [-0.035, 1.125, 0.072], ['vesicula', 'digestorio'], { scale: [0.8, 1.3, 0.8] });
   limb(g, [0, 1.5, 0.005], [0.035, 1.17, 0.01], 0.0075, COR.digestorio, ['esofago', 'digestorio']);
   place(g, sphere(0.05), COR.digestorio, [0.055, 1.135, 0.04], ['estomago', 'digestorio'], { scale: [1.25, 0.85, 0.8], rot: [0, 0, 0.5] });
   place(g, sphere(0.07), COR.figado, [-0.05, 1.165, 0.03], ['figado', 'digestorio'], { scale: [1.3, 0.65, 0.9], rot: [0, 0, -0.25] });
@@ -294,10 +328,160 @@ const animated = { heart: null, lungs: [] };
   // Urinário
   both(function (s) {
     place(g, sphere(0.03), COR.urinario, [0.075 * s, 1.08, -0.045], ['rins', 'urinario'], { scale: [0.8, 1.3, 0.7] });
-    limb(g, [0.07 * s, 1.04, -0.04], [0.02 * s, 0.91, 0.03], 0.004, COR.urinario, ['rins', 'urinario']);
+    limb(g, [0.07 * s, 1.04, -0.04], [0.02 * s, 0.91, 0.03], 0.004, 0xE6B800, ['ureteres', 'urinario']);
   });
   place(g, sphere(0.03), COR.urinario, [0, 0.9, 0.04], ['bexiga', 'urinario'], { scale: [1.1, 0.9, 1] });
+  limb(g, [0, 0.875, 0.045], [0, 0.835, 0.05], 0.0045, 0xE6B800, ['uretra', 'urinario']);
 })();
+
+// ========== BOLHAS DE AUMENTO (partes microscópicas) ==========
+// Cada bolha aparece ao lado de um órgão quando a tag é tocada.
+const detalhes = new THREE.Group();
+detalhes.visible = false;
+scene.add(detalhes);
+const bolhas = {}; // id da parte -> { grupo, ancora }
+
+function tube(group, pts, r, color, info) {
+  const curve = new THREE.CatmullRomCurve3(pts.map(function (p) { return new THREE.Vector3(p[0], p[1], p[2]); }));
+  return place(group, new THREE.TubeGeometry(curve, 48, r, 8, false), color, null, info);
+}
+
+function novaBolha(ids, ancora, raio) {
+  const grupo = new THREE.Group();
+  grupo.visible = false;
+  detalhes.add(grupo);
+  place(grupo, sphere(raio || 0.11), 0xFFFFFF, [0, 0, 0], [ids[0], 'bolha'],
+    { ghost: true, mat: { transparent: true, opacity: 0.22, depthWrite: false, roughness: 0.1 } });
+  const b = { grupo: grupo, ancora: new THREE.Vector3(ancora[0], ancora[1], ancora[2]) };
+  ids.forEach(function (id) { bolhas[id] = b; });
+  return grupo;
+}
+
+// Neurônio: corpo celular, dendritos, axônio com bainha e terminais
+(function () {
+  const g = novaBolha(['neuronios'], [0, 1.665, 0.005]);
+  const i = ['neuronios', 'nervoso'], c = 0x9B5DE5;
+  place(g, sphere(0.02), c, [-0.035, 0.02, 0], i);
+  [[-0.08, 0.06, 0.01], [-0.075, -0.01, 0.02], [-0.05, 0.07, -0.02], [-0.02, 0.065, 0.02], [-0.07, 0.035, -0.03]].forEach(function (p) {
+    limb(g, [-0.035, 0.02, 0], p, 0.0035, 0xB98BF0, i);
+  });
+  limb(g, [-0.02, 0.008, 0], [0.06, -0.045, 0], 0.004, c, i);
+  for (let k = 0; k < 3; k++) {
+    const t = 0.2 + k * 0.27;
+    place(g, new THREE.CapsuleGeometry(0.008, 0.012, 4, 12), 0xF2E9FF, [-0.02 + 0.08 * t, 0.008 - 0.053 * t, 0], i,
+      { rot: [0, 0, Math.atan2(-0.053, 0.08) + Math.PI / 2] });
+  }
+  [[0.085, -0.03, 0.01], [0.08, -0.07, 0], [0.07, -0.06, 0.025]].forEach(function (p) {
+    limb(g, [0.06, -0.045, 0], p, 0.0025, c, i);
+    place(g, sphere(0.006), 0xD7C2FF, p, i);
+  });
+})();
+
+// Alvéolos: bronquíolo terminando em "cachos" com capilares
+(function () {
+  const g = novaBolha(['alveolos'], [0.085, 1.24, 0.01]);
+  const i = ['alveolos', 'respiratorio'];
+  limb(g, [0, 0.08, 0], [0, 0.02, 0], 0.008, 0x1588B8, i);
+  [[-0.04, -0.02, 0], [0.04, -0.02, 0.005], [0, -0.05, -0.01]].forEach(function (c) {
+    limb(g, [0, 0.02, 0], c, 0.005, 0x1588B8, i);
+    for (let k = 0; k < 7; k++) {
+      const a = (k / 7) * Math.PI * 2;
+      place(g, sphere(0.014), 0x8FDDF7, [c[0] + Math.cos(a) * 0.017, c[1] + Math.sin(a) * 0.014, c[2] + (k % 2 ? 0.01 : -0.01)], i);
+    }
+    const cap = new THREE.TorusGeometry(0.026, 0.0025, 6, 30);
+    place(g, cap, 0xE63950, c, i, { rot: [0.5, 0.3, 0] });
+  });
+})();
+
+// Néfron: glomérulo (novelo de capilares) e túbulos
+(function () {
+  const g = novaBolha(['nefrons'], [0.075, 1.08, -0.045]);
+  const i = ['nefrons', 'urinario'];
+  place(g, new THREE.TorusKnotGeometry(0.014, 0.004, 64, 8, 2, 5), 0xE63950, [-0.04, 0.04, 0], i);
+  place(g, sphere(0.026), 0xFFD23F, [-0.04, 0.04, 0], i, { mat: { transparent: true, opacity: 0.45, depthWrite: false } });
+  tube(g, [[-0.02, 0.03, 0], [0.02, 0.05, 0.01], [0.04, 0.02, -0.01], [0.01, 0.0, 0.01], [0.03, -0.03, 0], [0.02, -0.075, 0], [0.0, -0.03, 0.005], [-0.02, -0.07, 0]], 0.006, 0xE6B800, i);
+  tube(g, [[-0.02, -0.07, 0], [-0.05, -0.04, 0.01], [-0.06, -0.08, 0]], 0.007, 0xC99400, i);
+})();
+
+// Capilares: arteríola (vermelha) que vira vênula (azul) por uma rede fina
+(function () {
+  const g = novaBolha(['capilares'], [0.29, 0.92, 0.0]);
+  const i = ['capilares', 'circulatorio'];
+  limb(g, [-0.09, 0.03, 0], [-0.04, 0.03, 0], 0.01, 0xE63950, i);
+  limb(g, [0.04, -0.03, 0], [0.09, -0.03, 0], 0.01, 0x3D6FE0, i);
+  const cores = [0xE63950, 0xC0457A, 0x9A4FA8, 0x6E5BC8, 0x3D6FE0];
+  for (let k = 0; k < 5; k++) {
+    const dz = (k - 2) * 0.012;
+    tube(g, [[-0.04, 0.03, 0], [-0.015, 0.04 - k * 0.012, dz], [0.015, -0.01 - k * 0.008, -dz], [0.04, -0.03, 0]], 0.0028, cores[k], i);
+  }
+})();
+
+// Sangue: hemácias, leucócitos e plaquetas
+(function () {
+  const g = novaBolha(['sangue'], [0.025, 1.255, 0.05]);
+  const i = ['sangue', 'circulatorio'];
+  const pos = [[-0.05, 0.03, 0.01], [0.0, 0.05, -0.02], [0.05, 0.02, 0.02], [-0.03, -0.03, -0.02], [0.03, -0.04, 0.0], [-0.06, -0.01, 0.03], [0.06, -0.01, -0.03]];
+  pos.forEach(function (p, k) {
+    place(g, new THREE.TorusGeometry(0.012, 0.008, 12, 24), 0xE63950, p, i, { rot: [k * 0.7, k * 1.1, 0] });
+  });
+  place(g, sphere(0.018), 0xF3EEFF, [0.005, -0.005, 0.03], i);
+  place(g, sphere(0.015), 0xE9E0FF, [-0.01, 0.0, -0.05], i);
+  [[0.03, 0.06, 0.02], [-0.02, 0.07, 0.03], [0.07, 0.04, -0.01], [-0.07, 0.05, -0.02], [0.0, -0.07, 0.02]].forEach(function (p) {
+    place(g, sphere(0.005), 0xFFC93C, p, i, { scale: [1.4, 0.6, 1] });
+  });
+})();
+
+// Pele em corte: epiderme, derme (vasos, glândulas, pelo) e hipoderme
+(function () {
+  const g = novaBolha(['epiderme', 'derme', 'hipoderme', 'pelos', 'glandulas_suor', 'glandulas_sebo'], [0.28, 0.98, 0.03], 0.12);
+  place(g, new THREE.BoxGeometry(0.15, 0.045, 0.09), 0xFFE08A, [0, -0.05, 0], ['hipoderme', 'tegumentar']);
+  place(g, new THREE.BoxGeometry(0.15, 0.055, 0.09), 0xF6A3AE, [0, 0.0, 0], ['derme', 'tegumentar']);
+  place(g, new THREE.BoxGeometry(0.15, 0.016, 0.09), 0xF6C6A5, [0, 0.0355, 0], ['epiderme', 'tegumentar']);
+  limb(g, [-0.075, -0.005, 0.047], [0.075, -0.005, 0.047], 0.004, 0xE63950, ['derme', 'tegumentar']);
+  // Pelo com folículo
+  limb(g, [-0.03, -0.02, 0.02], [-0.04, 0.09, 0.02], 0.0035, 0x4A3B2A, ['pelos', 'tegumentar']);
+  place(g, sphere(0.008), 0x6B4F3A, [-0.03, -0.022, 0.02], ['pelos', 'tegumentar']);
+  // Glândula sebácea ao lado do pelo
+  place(g, sphere(0.01), 0xFFF3C4, [-0.018, 0.0, 0.02], ['glandulas_sebo', 'tegumentar'], { scale: [1, 1.3, 1] });
+  // Glândula sudorípara: novelo com um duto até a superfície
+  place(g, new THREE.TorusKnotGeometry(0.01, 0.003, 48, 6, 2, 3), 0x4CC9F0, [0.035, -0.03, 0.02], ['glandulas_suor', 'tegumentar']);
+  limb(g, [0.035, -0.02, 0.02], [0.04, 0.044, 0.02], 0.0025, 0x4CC9F0, ['glandulas_suor', 'tegumentar']);
+})();
+
+// Linha que liga a bolha ao órgão
+const conector = new THREE.Mesh(
+  new THREE.CylinderGeometry(0.0022, 0.0022, 1, 8),
+  new THREE.MeshBasicMaterial({ color: 0x9AA5D6, transparent: true, opacity: 0.8 })
+);
+detalhes.add(conector);
+
+function esconderBolhas() {
+  detalhes.visible = false;
+  Object.keys(bolhas).forEach(function (k) { bolhas[k].grupo.visible = false; });
+}
+
+// Posiciona a bolha ao lado da âncora, do lado que a câmera vê melhor
+function mostrarBolha(id) {
+  const b = bolhas[id];
+  esconderBolhas();
+  const frente = camera.position.clone().sub(controls.target);
+  frente.y = 0;
+  if (frente.lengthSq() < 1e-6) frente.set(0, 0, 1);
+  frente.normalize();
+  const direita = new THREE.Vector3(frente.z, 0, -frente.x);
+  const lado = b.ancora.clone().setY(0).dot(direita) >= 0 ? 1 : -1;
+  const pos = b.ancora.clone().add(direita.multiplyScalar(0.24 * lado)).add(frente.multiplyScalar(0.06));
+  b.grupo.position.copy(pos);
+  b.grupo.lookAt(pos.clone().add(camera.position.clone().sub(controls.target).setY(0)));
+  const meio = pos.clone().add(b.ancora).multiplyScalar(0.5);
+  conector.position.copy(meio);
+  conector.scale.set(1, Math.max(pos.distanceTo(b.ancora) - 0.11, 0.01), 1);
+  conector.quaternion.setFromUnitVectors(UP, pos.clone().sub(b.ancora).normalize());
+  conector.position.copy(b.ancora.clone().add(pos.clone().sub(b.ancora).normalize().multiplyScalar((pos.distanceTo(b.ancora) - 0.11) / 2)));
+  b.grupo.visible = true;
+  detalhes.visible = true;
+  return b;
+}
 
 // ---------- Camada visível e destaque ----------
 let currentLayer = 'pele';
@@ -337,6 +521,7 @@ function applyHighlight() {
 function highlight(system) {
   currentHighlight = system || null;
   focusedOrgan = null;
+  esconderBolhas();
   applyHighlight();
 }
 
@@ -354,15 +539,24 @@ function animateCamera(toTarget, toPos) {
 function focusOrgan(id) {
   const box = new THREE.Box3();
   let found = false;
-  allMeshes.forEach(function (m) {
-    if (m.userData.organ === id && isShown(m)) { box.expandByObject(m); found = true; }
-  });
+  if (bolhas[id]) {
+    // Parte microscópica: abre a bolha de aumento e enquadra bolha + órgão
+    const b = mostrarBolha(id);
+    box.expandByObject(b.grupo);
+    found = true;
+  } else {
+    esconderBolhas();
+    allMeshes.forEach(function (m) {
+      if (m.userData.organ === id && !m.userData.semFoco && isShown(m)) { box.expandByObject(m); found = true; }
+    });
+  }
   if (!found) return;
   focusedOrgan = id;
   applyHighlight();
   const center = box.getCenter(new THREE.Vector3());
   const size = box.getSize(new THREE.Vector3()).length();
-  const dist = Math.min(Math.max(size * 5, 1.4), 4.5);
+  // Bolhas pedem mais zoom: os detalhes são pequenos
+  const dist = bolhas[id] ? Math.min(Math.max(size * 3, 1.0), 2) : Math.min(Math.max(size * 5, 1.1), 4.5);
   // Mantém o ângulo atual na horizontal, olhando levemente de cima
   const dir = camera.position.clone().sub(controls.target);
   dir.y = 0;
@@ -389,6 +583,7 @@ function centerOrgan(id) {
 
 function resetView() {
   focusedOrgan = null;
+  esconderBolhas();
   applyHighlight();
   animateCamera(HOME_TARGET.clone(), HOME_POS.clone());
 }

@@ -48,7 +48,7 @@ export function InfoCard({ organ, nivel, onClose, onFocarParte, bottomInset }: P
         <Text style={[styles.expandir, { color: sistema.cor }]}>{expandido ? 'Toque para diminuir ▾' : 'Toque para ver tudo ▴'}</Text>
       </Pressable>
 
-      <ScrollView style={styles.corpo} contentContainerStyle={{ paddingBottom: 8 }} showsVerticalScrollIndicator={false}>
+      <ScrollView style={styles.corpo} contentContainerStyle={{ paddingBottom: 24 }} showsVerticalScrollIndicator={false}>
         <View style={[styles.fato, { borderColor: sistema.cor }]}>
           <Text style={styles.fatoTexto}>{orgao.fato}</Text>
           <Text style={styles.orgaoTexto}>{orgao[nivel]}</Text>
@@ -70,7 +70,7 @@ export function InfoCard({ organ, nivel, onClose, onFocarParte, bottomInset }: P
         </Secao>
 
         <Secao titulo="Partes">
-          {sistema.partes.some((p) => PARTE_ORGAO[p]) && <Text style={styles.dicaPartes}>Toque numa parte com 🔍 para ver no corpo</Text>}
+          <Text style={styles.dicaPartes}>Toque numa parte para ver no corpo</Text>
           <View style={styles.partes}>
             {sistema.partes.map((p) => {
               const alvo = PARTE_ORGAO[p];
@@ -95,7 +95,7 @@ export function InfoCard({ organ, nivel, onClose, onFocarParte, bottomInset }: P
                     pressed && { transform: [{ scale: 0.94 }] },
                   ]}
                 >
-                  <Text style={[styles.parteTexto, { color: sistema.cor }]}>🔍 {p}</Text>
+                  <Text style={[styles.parteTexto, { color: sistema.cor }]}>{p}</Text>
                 </Pressable>
               );
             })}
@@ -161,7 +161,8 @@ const styles = StyleSheet.create({
   fechar: { width: 36, height: 36, borderRadius: 18, backgroundColor: cores.branco, alignItems: 'center', justifyContent: 'center' },
   fecharTexto: { fontSize: 16, color: cores.textoSuave, fontWeight: '800' },
   expandir: { fontSize: 12, fontWeight: '800', textAlign: 'center', marginTop: 8 },
-  corpo: { paddingHorizontal: 20, paddingTop: 16 },
+  // flexShrink: sem isso a lista passa do limite do cartão e o fim fica cortado
+  corpo: { flexShrink: 1, paddingHorizontal: 20, paddingTop: 16 },
   fato: { borderLeftWidth: 4, paddingLeft: 12, marginBottom: 4 },
   fatoTexto: { fontSize: 16.5, fontWeight: '800', color: cores.texto, lineHeight: 23 },
   orgaoTexto: { fontSize: 15, color: cores.textoSuave, lineHeight: 22, marginTop: 4 },
