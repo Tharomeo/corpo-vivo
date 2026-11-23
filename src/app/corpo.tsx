@@ -23,10 +23,10 @@ export default function Corpo() {
   const foco = params.foco && ORGAOS[params.foco] ? params.foco : null;
   const camadaInicial: Camada = foco ? camadaDoSistema(ORGAOS[foco].sistema) : 'pele';
   const nivel: Nivel = params.nivel === 'finais' ? 'finais' : 'iniciais';
-  // Itens do menu do topo. O jogo das ervilhas (genética) é dos Anos Finais.
+  // Itens do menu do topo
   const menu = [
     { id: 'prova', nome: 'Me testar', emoji: '📝', cor: '#FF5D8F' },
-    ...(nivel === 'finais' ? [{ id: 'jogo', nome: 'Jogo', emoji: '🫛', cor: '#2EC4B6' }] : []),
+    { id: 'jogos', nome: 'Jogos', emoji: '🎮', cor: '#2EC4B6' },
   ] as const;
   const insets = useSafeAreaInsets();
 
@@ -109,7 +109,7 @@ export default function Corpo() {
           {menu.map((m) => (
             <Pressable
               key={m.id}
-              onPress={() => router.push({ pathname: m.id === 'prova' ? '/prova' : '/jogo', params: { nivel } })}
+              onPress={() => router.push({ pathname: m.id === 'prova' ? '/prova' : '/jogos', params: { nivel } })}
               style={({ pressed }) => [styles.menuItem, pressed && { transform: [{ scale: 0.95 }] }]}
             >
               <View style={[styles.menuEmoji, { backgroundColor: m.cor }]}>
