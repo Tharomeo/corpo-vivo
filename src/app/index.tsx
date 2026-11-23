@@ -2,6 +2,7 @@ import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { Animated, Easing, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { destinoInicial, useConta } from '../lib/conta';
 import { cores, sombra } from '../theme';
 
 // Bolhas decorativas do fundo
@@ -24,12 +25,20 @@ const DURACAO = 4000;
 export default function Inicio() {
   const [progresso] = useState(() => new Animated.Value(0));
 
-  // Tela de abertura: enche a barrinha e segue sozinha para a escolha da etapa
+  const conta = useConta();
+  const [tempoAcabou, setTempoAcabou] = useState(false);
+
+  // Tela de abertura: enche a barrinha enquanto confere se já existe login
   useEffect(() => {
     Animated.timing(progresso, { toValue: 1, duration: DURACAO, easing: Easing.inOut(Easing.quad), useNativeDriver: false }).start();
-    const t = setTimeout(() => router.replace('/anos'), DURACAO);
+    const t = setTimeout(() => setTempoAcabou(true), DURACAO);
     return () => clearTimeout(t);
   }, [progresso]);
+
+  // Sem login vai para Entrar; sem apelido vai para Apelido; senão, escolha da etapa
+  useEffect(() => {
+    if (tempoAcabou && !conta.carregando) router.replace(destinoInicial(conta));
+  }, [tempoAcabou, conta]);
 
   const largura = progresso.interpolate({ inputRange: [0, 1], outputRange: ['0%', '100%'] });
 

@@ -4,6 +4,7 @@ import { Animated, Easing, Pressable, ScrollView, StyleSheet, Text, View } from 
 import { SafeAreaView } from 'react-native-safe-area-context';
 import type { Nivel } from '../../data/sistemas';
 import { calcularPontos, type ModoId, type Resultado } from '../../lib/pontos';
+import { useConta } from '../../lib/conta';
 import { lerPartidas, registrarPartida, type ResultadoEnvio } from '../../lib/placar';
 import { cores, sombra } from '../../theme';
 
@@ -72,6 +73,8 @@ export function FimDeJogo({
   onDeNovo: () => void;
 }) {
   const d = calcularPontos(resultado);
+  const { usuario, modoTeste } = useConta();
+  const comConta = Boolean(usuario) && !modoTeste;
   const [pulo] = useState(() => new Animated.Value(0));
   const [contagem] = useState(() => new Animated.Value(0));
   const [mostrado, setMostrado] = useState(0);
@@ -106,10 +109,10 @@ export function FimDeJogo({
         acertos: resultado.acertos,
         erros: resultado.erros,
         tempo_ms: Math.max(1000, Math.round(resultado.tempoMs)),
-      });
+      }, comConta);
       setEnvio(r);
     })();
-  }, [modo, nivel, d.total, resultado]);
+  }, [modo, nivel, d.total, resultado, comConta]);
 
   const novoRecorde = recordeAntes !== null && d.total > recordeAntes;
 

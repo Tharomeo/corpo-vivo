@@ -34,17 +34,26 @@ O 3D carrega a biblioteca three.js pela internet, então o celular precisa estar
 
 Para ver no navegador: `npx expo start --web`.
 
-## Ranking mundial (opcional)
+## Contas, apelidos e ranking (Supabase)
 
-Os jogos dão pontos (acertos, agilidade e desconto por erro) e salvam as partidas no celular.
-Para o ranking mundial:
+O app pede login por e-mail com código (sem senha), depois o apelido (único, com filtro de palavras).
+Os jogos dão pontos (acertos, agilidade e desconto por erro) e enviam para o ranking mundial.
 
-1. Crie um projeto no [Supabase](https://supabase.com) e rode `supabase/ranking.sql` no SQL Editor.
-2. Copie `.env.example` para `.env.local` e preencha a URL e a chave publishable (ou anon).
-3. Reinicie o `npx expo start`.
+Sem servidor configurado, o app roda em **modo de teste**: nenhum e-mail é enviado, qualquer código
+de 6 números entra e tudo fica salvo só no celular.
 
-Sem isso o app funciona normalmente, com ranking só das partidas do próprio celular.
-Os apelidos são gerados pelo app (sem nome digitado), porque o público inclui crianças.
+Para ligar o servidor:
+
+1. Crie um projeto no [Supabase](https://supabase.com).
+2. No SQL Editor, rode `supabase/schema.sql`.
+3. Em Authentication > Emails > Templates, no modelo **Magic Link**, inclua o código no texto do e-mail,
+   por exemplo: `Seu código do Corpo Vivo é {{ .Token }}`. Sem isso o e-mail chega só com um link.
+4. Copie `.env.example` para `.env.local` e preencha a URL e a chave publishable (ou anon),
+   que ficam em Project Settings > API.
+5. Reinicie o `npx expo start`.
+
+O plano (gratuito ou premium) fica no perfil e só pode ser mudado pelo servidor; o pagamento com cartão
+entra numa próxima etapa.
 
 ## Estrutura
 

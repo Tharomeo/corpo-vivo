@@ -4,17 +4,8 @@ import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View, type 
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { TopoJogo } from '../components/jogos/Moldura';
 import type { Nivel } from '../data/sistemas';
-import {
-  buscarMedia,
-  buscarRanking,
-  lerJogador,
-  lerPartidas,
-  rankingLocal,
-  rankingMundialAtivo,
-  type Jogador,
-  type LinhaRanking,
-  type Partida,
-} from '../lib/placar';
+import { useConta } from '../lib/conta';
+import { buscarMedia, buscarRanking, lerPartidas, rankingLocal, rankingMundialAtivo, type LinhaRanking, type Partida } from '../lib/placar';
 import { MODOS, type ModoId } from '../lib/pontos';
 import { cores, sombra } from '../theme';
 
@@ -27,7 +18,7 @@ export default function Ranking() {
   const inicial = modos.find((m) => m.id === params.modo)?.id ?? modos[0].id;
 
   const [modo, setModo] = useState<ModoId>(inicial);
-  const [jogador, setJogador] = useState<Jogador | null>(null);
+  const { usuario, perfil } = useConta();
   const [partidas, setPartidas] = useState<Partida[]>([]);
   const [linhas, setLinhas] = useState<LinhaRanking[] | null>(null);
   const [media, setMedia] = useState<number | null>(null);
@@ -42,7 +33,6 @@ export default function Ranking() {
   };
 
   useEffect(() => {
-    lerJogador().then(setJogador);
     lerPartidas().then(setPartidas);
   }, []);
 
@@ -66,7 +56,7 @@ export default function Ranking() {
   const meuMelhor = minhas.length ? Math.max(...minhas.map((p) => p.pontos)) : null;
   const minhaMedia = minhas.length ? Math.round(minhas.reduce((s, p) => s + p.pontos, 0) / minhas.length) : null;
 
-  const lista = linhas ?? rankingLocal(partidas, modo, nivel, jogador);
+  const lista = linhas ?? rankingLocal(partidas, modo, nivel, usuario?.id ?? 'local', perfil?.apelido ?? 'Você');
   const online = linhas !== null;
   const nomeModo = MODOS.find((m) => m.id === modo);
 
@@ -125,7 +115,7 @@ export default function Ranking() {
           <Text style={styles.vazio}>Ninguém jogou ainda. Seja o primeiro! 🚀</Text>
         ) : (
           lista.map((l, i) => {
-            const eu = l.jogador_id === jogador?.id;
+            const eu = l.jogador_id === usuario?.id;
             return (
               <View key={l.jogador_id} style={[styles.linha, eu && styles.linhaEu]}>
                 <Text style={styles.posicao}>{MEDALHAS[i] ?? `${i + 1}º`}</Text>

@@ -1,27 +1,16 @@
 import { router, useLocalSearchParams } from 'expo-router';
-import { useEffect, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { EscolhaApelido } from '../components/jogos/EscolhaApelido';
 import { TopoJogo } from '../components/jogos/Moldura';
 import { JOGOS } from '../data/jogos';
 import type { Nivel } from '../data/sistemas';
-import { lerJogador, type Jogador } from '../lib/placar';
+import { useConta } from '../lib/conta';
 import { cores, sombra } from '../theme';
 
 export default function Jogos() {
   const params = useLocalSearchParams<{ nivel?: string }>();
   const nivel: Nivel = params.nivel === 'finais' ? 'finais' : 'iniciais';
-  const [jogador, setJogador] = useState<Jogador | null>(null);
-  const [carregado, setCarregado] = useState(false);
-  const [trocando, setTrocando] = useState(false);
-
-  useEffect(() => {
-    lerJogador().then((j) => {
-      setJogador(j);
-      setCarregado(true);
-    });
-  }, []);
+  const { perfil } = useConta();
 
   return (
     <SafeAreaView style={styles.tela} edges={['top']}>
@@ -30,10 +19,10 @@ export default function Jogos() {
         <Text style={styles.sub}>{nivel === 'iniciais' ? 'Anos Iniciais' : 'Anos Finais'} · aprenda brincando</Text>
 
         <View style={styles.perfil}>
-          <Pressable onPress={() => setTrocando(true)} style={({ pressed }) => [styles.apelido, pressed && { opacity: 0.7 }]}>
+          <Pressable onPress={() => router.push({ pathname: '/apelido', params: { editar: '1' } })} style={({ pressed }) => [styles.apelido, pressed && { opacity: 0.7 }]}>
             <Text style={styles.apelidoRotulo}>Seu apelido</Text>
             <Text style={styles.apelidoNome} numberOfLines={1}>
-              {jogador?.apelido ?? '...'}
+              {perfil?.apelido ?? '...'}
             </Text>
             <Text style={styles.apelidoTrocar}>trocar</Text>
           </Pressable>
@@ -67,15 +56,6 @@ export default function Jogos() {
         ))}
       </ScrollView>
 
-      <EscolhaApelido
-        visivel={(carregado && !jogador) || trocando}
-        atual={jogador?.apelido ?? null}
-        onEscolhido={(j) => {
-          setJogador(j);
-          setTrocando(false);
-        }}
-        onFechar={jogador ? () => setTrocando(false) : undefined}
-      />
     </SafeAreaView>
   );
 }

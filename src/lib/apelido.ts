@@ -1,5 +1,4 @@
-// Apelidos gerados a partir de listas: o app é usado por crianças, então o ranking
-// público não aceita nome digitado (evita dado pessoal e palavrão).
+// Sugestões de apelido para quem não tem ideia (a pessoa pode digitar o próprio).
 
 const NOMES = ['Neurônio', 'Hemácia', 'Plaqueta', 'Alvéolo', 'Cerebelo', 'Néfron', 'Bíceps', 'Fêmur', 'Glóbulo', 'Pulmão', 'Coração', 'Vilosidade', 'Diafragma', 'Tendão', 'Leucócito', 'Pâncreas'];
 
@@ -15,8 +14,11 @@ export function gerarApelido() {
   return `${sortear(NOMES)} ${sortear(ADJETIVOS)} ${n}`;
 }
 
-export function opcoesDeApelido(qtd = 3) {
+export function opcoesDeApelido(qtd = 3, max = 20) {
   const set = new Set<string>();
-  while (set.size < qtd) set.add(gerarApelido());
+  while (set.size < qtd) {
+    const a = gerarApelido();
+    if (a.length <= max) set.add(a);
+  }
   return [...set];
 }

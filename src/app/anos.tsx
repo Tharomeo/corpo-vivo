@@ -2,6 +2,7 @@ import { router } from 'expo-router';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import type { Nivel } from '../data/sistemas';
+import { useConta } from '../lib/conta';
 import { cores, sombra } from '../theme';
 
 type Etapa = {
@@ -52,8 +53,17 @@ const ETAPAS: Etapa[] = [
 ];
 
 export default function EscolhaDaEtapa() {
+  const { perfil } = useConta();
   return (
     <SafeAreaView style={styles.tela} edges={['top']}>
+      <View style={styles.cabecalho}>
+        <Text style={styles.ola} numberOfLines={1}>
+          Olá, {perfil?.apelido ?? 'estudante'}! 👋
+        </Text>
+        <Pressable onPress={() => router.push('/conta')} hitSlop={8} style={({ pressed }) => [styles.avatar, pressed && { opacity: 0.8 }]}>
+          <Text style={styles.avatarTexto}>{(perfil?.apelido ?? '?').charAt(0).toUpperCase()}</Text>
+        </Pressable>
+      </View>
       <Text style={styles.titulo}>O que você quer estudar?</Text>
 
       <ScrollView contentContainerStyle={styles.lista} showsVerticalScrollIndicator={false}>
@@ -92,7 +102,11 @@ export default function EscolhaDaEtapa() {
 
 const styles = StyleSheet.create({
   tela: { flex: 1, backgroundColor: cores.fundo },
-  titulo: { fontSize: 28, fontWeight: '900', color: cores.texto, paddingHorizontal: 22, paddingTop: 16, paddingBottom: 4 },
+  cabecalho: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: 22, paddingTop: 12 },
+  ola: { flex: 1, fontSize: 16, fontWeight: '800', color: cores.textoSuave },
+  avatar: { width: 44, height: 44, borderRadius: 22, backgroundColor: cores.roxo, alignItems: 'center', justifyContent: 'center', ...sombra },
+  avatarTexto: { color: cores.branco, fontSize: 19, fontWeight: '900' },
+  titulo: { fontSize: 28, fontWeight: '900', color: cores.texto, paddingHorizontal: 22, paddingTop: 6, paddingBottom: 4 },
   lista: { padding: 20, paddingBottom: 48, gap: 16 },
   card: { flexDirection: 'row', alignItems: 'center', gap: 14, borderRadius: 28, padding: 18, ...sombra },
   cardBloqueado: { shadowOpacity: 0, elevation: 0, opacity: 0.85 },
