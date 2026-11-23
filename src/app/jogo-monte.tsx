@@ -3,7 +3,8 @@ import { Animated, PanResponder, StyleSheet, Text, useWindowDimensions, View } f
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Balao, FimDeJogo, Placar, TopoJogo } from '../components/jogos/Moldura';
 import { Orgao2D } from '../components/jogos/Orgao2D';
-import { ENCAIXES, FASES_MONTE, estrelasPorErros } from '../data/jogos';
+import { ENCAIXES, FASES_MONTE } from '../data/jogos';
+import { pontosParciais, type ModoId } from '../lib/pontos';
 import { cores } from '../theme';
 import { embaralhar } from '../utils/embaralhar';
 
@@ -139,6 +140,9 @@ export default function MonteOCorpo() {
   const [rodada, setRodada] = useState(0);
   const [colocadas, setColocadas] = useState<string[]>([]);
   const [erros, setErros] = useState(0);
+  // Tempo da fase: começa ao abrir e para no último encaixe
+  const [inicio, setInicio] = useState(() => Date.now());
+  const [tempoMs, setTempoMs] = useState(0);
   const [balao, setBalao] = useState<{
     texto: string;
     tipo: 'acerto' | 'dica';
@@ -174,15 +178,20 @@ export default function MonteOCorpo() {
     setBalao(null);
     setFim(false);
     setRodada((r) => r + 1);
+    setInicio(Date.now());
   };
 
   // Todas no lugar: espera o último pulinho e mostra o fim
   const completo = colocadas.length === f.pecas.length;
   useEffect(() => {
     if (!completo) return;
-    const t = setTimeout(() => setFim(true), 1100);
+    const fimEm = Date.now();
+    const t = setTimeout(() => {
+      setTempoMs(fimEm - inicio);
+      setFim(true);
+    }, 1100);
     return () => clearTimeout(t);
-  }, [completo]);
+  }, [completo, inicio]);
 
   // Estável (sem dependências) para a peça não recriar o arraste no meio do gesto
   const onSolta = useCallback((id: string, ok: boolean) => {
@@ -205,12 +214,13 @@ export default function MonteOCorpo() {
   }, []);
 
   if (fim) {
-    const estrelas = estrelasPorErros(erros, f.pecas.length);
     const ultima = fase === FASES_MONTE.length - 1;
     return (
       <FimDeJogo
         key={`fim-${rodada}`}
-        estrelas={estrelas}
+        modo={`monte-${fase + 1}` as ModoId}
+        nivel="iniciais"
+        resultado={{ acertos: f.pecas.length, erros, tempoMs, tempoIdealSeg: f.pecas.length * 6 }}
         titulo={ultima ? 'Corpo completo!' : 'Fase completa!'}
         texto={
           erros === 0 ? 'Você acertou tudo de primeira!' : `Você montou com ${erros} ${erros === 1 ? 'tentativa errada' : 'tentativas erradas'}.`
@@ -223,7 +233,7 @@ export default function MonteOCorpo() {
 
   return (
     <SafeAreaView style={styles.tela} edges={['top', 'bottom']}>
-      <TopoJogo titulo="Monte o corpo" cor={COR} direita={<Placar texto={`${colocadas.length}/${f.pecas.length}`} cor={COR} />} />
+      <TopoJogo titulo="Monte o corpo" cor={COR} direita={<Placar texto={`⭐ ${pontosParciais(colocadas.length, erros)}`} cor={COR} />} />
       <Text style={styles.fase}>{f.titulo}</Text>
       <Text style={styles.instrucao}>Arraste cada órgão até o lugar dele no corpo</Text>
 

@@ -3,7 +3,8 @@ import { Animated, Pressable, StyleSheet, Text, useWindowDimensions, View } from
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Balao, FimDeJogo, Placar, TopoJogo } from '../components/jogos/Moldura';
 import { Orgao2D } from '../components/jogos/Orgao2D';
-import { NOME_PECA, VIAGENS, estrelasPorErros, type Peca2D } from '../data/jogos';
+import { NOME_PECA, VIAGENS, type Peca2D } from '../data/jogos';
+import { pontosParciais, type ModoId } from '../lib/pontos';
 import { cores, sombra } from '../theme';
 import { embaralhar } from '../utils/embaralhar';
 
@@ -71,6 +72,8 @@ export default function Viagens() {
   const [rodada, setRodada] = useState(0);
   const [feitos, setFeitos] = useState(0); // quantos passos do caminho já foram tocados
   const [erros, setErros] = useState(0);
+  const [inicio, setInicio] = useState(() => Date.now());
+  const [tempoMs, setTempoMs] = useState(0);
   const [tremor, setTremor] = useState<Record<string, number>>({});
   const [balao, setBalao] = useState<{ texto: string; tipo: 'acerto' | 'dica'; n: number } | null>(null);
   const [fim, setFim] = useState(false);
@@ -81,9 +84,13 @@ export default function Viagens() {
 
   useEffect(() => {
     if (!completo) return;
-    const t = setTimeout(() => setFim(true), 1800);
+    const fimEm = Date.now();
+    const t = setTimeout(() => {
+      setTempoMs(fimEm - inicio);
+      setFim(true);
+    }, 1800);
     return () => clearTimeout(t);
-  }, [completo]);
+  }, [completo, inicio]);
 
   const tocar = (peca: Peca2D) => {
     if (completo) return;
@@ -107,6 +114,7 @@ export default function Viagens() {
     setBalao(null);
     setFim(false);
     setRodada((r) => r + 1);
+    setInicio(Date.now());
   };
 
   if (fim) {
@@ -114,7 +122,9 @@ export default function Viagens() {
     return (
       <FimDeJogo
         key={`fim-${rodada}`}
-        estrelas={estrelasPorErros(erros, v.caminho.length)}
+        modo={`viagem-${v.id}` as ModoId}
+        nivel="iniciais"
+        resultado={{ acertos: v.caminho.length, erros, tempoMs, tempoIdealSeg: v.caminho.length * 4 }}
         titulo="Chegou ao destino!"
         texto={v.final}
         proximo={ultima ? undefined : { texto: `Próxima: ${VIAGENS[indice + 1].titulo} ${VIAGENS[indice + 1].viajante}`, onPress: () => comecar(indice + 1) }}
@@ -131,7 +141,7 @@ export default function Viagens() {
 
   return (
     <SafeAreaView style={styles.tela} edges={['top', 'bottom']}>
-      <TopoJogo titulo={v.titulo} cor={v.cor} direita={<Placar texto={`${feitos}/${v.caminho.length}`} cor={v.cor} />} />
+      <TopoJogo titulo={v.titulo} cor={v.cor} direita={<Placar texto={`⭐ ${pontosParciais(feitos, erros)}`} cor={v.cor} />} />
 
       {/* Trilha: mostra o viajante avançando */}
       <View style={[styles.trilha, { backgroundColor: v.corClara }]}>

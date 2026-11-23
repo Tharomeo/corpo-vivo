@@ -4,6 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Balao, FimDeJogo, Placar, TopoJogo } from '../components/jogos/Moldura';
 import { Orgao2D } from '../components/jogos/Orgao2D';
 import { NOME_PECA, PARES_MEMORIA, type Peca2D } from '../data/jogos';
+import { pontosParciais } from '../lib/pontos';
 import { cores, sombra } from '../theme';
 import { embaralhar } from '../utils/embaralhar';
 
@@ -80,6 +81,8 @@ export default function Memoria() {
   const [abertas, setAbertas] = useState<number[]>([]);
   const [achados, setAchados] = useState<Peca2D[]>([]);
   const [jogadas, setJogadas] = useState(0);
+  const [inicio, setInicio] = useState(() => Date.now());
+  const [ultimoPar, setUltimoPar] = useState(0);
   const [balao, setBalao] = useState<{ texto: string; n: number } | null>(null);
 
   // Duas cartas abertas: confere o par
@@ -92,6 +95,7 @@ export default function Memoria() {
         if (certo) {
           const par = PARES_MEMORIA.find((p) => p.peca === cartas[a].par);
           setAchados((x) => [...x, cartas[a].par]);
+          setUltimoPar(Date.now());
           setBalao((x) => ({ texto: `✨ ${NOME_PECA[cartas[a].par]}: ${par?.funcao.toLowerCase()}!`, n: (x?.n ?? 0) + 1 }));
         }
         setAbertas([]);
@@ -114,14 +118,16 @@ export default function Memoria() {
     setJogadas(0);
     setBalao(null);
     setRodada((r) => r + 1);
+    setInicio(Date.now());
   };
 
   if (achados.length === PARES) {
-    const estrelas = jogadas <= PARES + 2 ? 3 : jogadas <= PARES * 2 ? 2 : 1;
     return (
       <FimDeJogo
         key={`fim-${rodada}`}
-        estrelas={estrelas}
+        modo="memoria"
+        nivel="iniciais"
+        resultado={{ acertos: PARES, erros: Math.max(0, jogadas - PARES), tempoMs: ultimoPar - inicio, tempoIdealSeg: PARES * 8 }}
         titulo="Todos os pares!"
         texto={`Você achou os ${PARES} pares em ${jogadas} jogadas.`}
         onDeNovo={recomeçar}
@@ -131,7 +137,7 @@ export default function Memoria() {
 
   return (
     <SafeAreaView style={styles.tela} edges={['top', 'bottom']}>
-      <TopoJogo titulo="Jogo da memória" cor={COR} direita={<Placar texto={`${achados.length}/${PARES}`} cor={COR} />} />
+      <TopoJogo titulo="Jogo da memória" cor={COR} direita={<Placar texto={`⭐ ${pontosParciais(achados.length, Math.max(0, jogadas - achados.length - (abertas.length === 2 ? 1 : 0)))}`} cor={COR} />} />
       <Text style={styles.instrucao}>Ache o par de cada órgão com o que ele faz</Text>
       <View style={[styles.grade, { width: largura * 3 + 20 }]}>
         {cartas.map((c, i) => (

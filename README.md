@@ -34,6 +34,18 @@ O 3D carrega a biblioteca three.js pela internet, então o celular precisa estar
 
 Para ver no navegador: `npx expo start --web`.
 
+## Ranking mundial (opcional)
+
+Os jogos dão pontos (acertos, agilidade e desconto por erro) e salvam as partidas no celular.
+Para o ranking mundial:
+
+1. Crie um projeto no [Supabase](https://supabase.com) e rode `supabase/ranking.sql` no SQL Editor.
+2. Copie `.env.example` para `.env.local` e preencha a URL e a chave publishable (ou anon).
+3. Reinicie o `npx expo start`.
+
+Sem isso o app funciona normalmente, com ranking só das partidas do próprio celular.
+Os apelidos são gerados pelo app (sem nome digitado), porque o público inclui crianças.
+
 ## Estrutura
 
 ```

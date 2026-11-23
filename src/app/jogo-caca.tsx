@@ -4,8 +4,9 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { BodyView } from '../components/BodyView';
 import type { BodyViewHandle, SceneMessage } from '../components/bodyViewTypes';
-import { Balao, FimDeJogo } from '../components/jogos/Moldura';
-import { ALVOS_CACA, estrelasPorErros, type Alvo3D } from '../data/jogos';
+import { Balao, FimDeJogo, Placar } from '../components/jogos/Moldura';
+import { ALVOS_CACA, type Alvo3D } from '../data/jogos';
+import { pontosParciais } from '../lib/pontos';
 import { ORGAOS, SISTEMAS, type Nivel } from '../data/sistemas';
 import { cores, sombra } from '../theme';
 import { embaralhar } from '../utils/embaralhar';
@@ -26,6 +27,8 @@ export default function CacaAoOrgao() {
   const [rodada, setRodada] = useState(0);
   const [erros, setErros] = useState(0);
   const [errosNaRodada, setErrosNaRodada] = useState(0);
+  const [inicio, setInicio] = useState(() => Date.now());
+  const [ultimoAcerto, setUltimoAcerto] = useState(0);
   const [balao, setBalao] = useState<{ texto: string; tipo: 'acerto' | 'dica'; n: number } | null>(null);
   const [pronto, setPronto] = useState(false);
   const [acertou, setAcertou] = useState(false);
@@ -53,11 +56,13 @@ export default function CacaAoOrgao() {
     (msg: SceneMessage) => {
       if (msg.type === 'ready') {
         setPronto(true);
+        setInicio(Date.now());
         if (alvo) scene.current?.run(`setLayer('${alvo.camada}'); highlight(null); resetView();`);
       }
       if (msg.type !== 'tap' || !msg.organ || !alvo || acertou) return;
       if (msg.organ === alvo.orgao) {
         setAcertou(true);
+        setUltimoAcerto(Date.now());
         scene.current?.run(`highlight('${ORGAOS[alvo.orgao].sistema}'); focusOrgan('${alvo.orgao}');`);
         setBalao((b) => ({ texto: `Isso! Você achou ${alvo.nome}! ${alvo.emoji}`, tipo: 'acerto', n: (b?.n ?? 0) + 1 }));
       } else {
@@ -92,7 +97,9 @@ export default function CacaAoOrgao() {
     return (
       <FimDeJogo
         key={`fim-${jogo}`}
-        estrelas={estrelasPorErros(erros, RODADAS)}
+        modo="caca"
+        nivel={nivel}
+        resultado={{ acertos: RODADAS, erros, tempoMs: ultimoAcerto - inicio, tempoIdealSeg: RODADAS * (nivel === 'finais' ? 12 : 9) }}
         titulo="Caça completa!"
         texto={erros === 0 ? `Você achou as ${RODADAS} partes sem errar!` : `Você achou as ${RODADAS} partes com ${erros} ${erros === 1 ? 'erro' : 'erros'}.`}
         onDeNovo={recomeçar}
@@ -116,6 +123,7 @@ export default function CacaAoOrgao() {
             {alvo.nome} {alvo.emoji}
           </Text>
         </View>
+        <Placar texto={`⭐ ${pontosParciais(rodada + (acertou ? 1 : 0), erros)}`} cor={COR} />
       </View>
 
       <View style={[styles.rodape, { paddingBottom: insets.bottom + 16 }]} pointerEvents="none">

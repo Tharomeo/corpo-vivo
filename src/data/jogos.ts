@@ -193,10 +193,3 @@ export const JOGOS: Record<Nivel, InfoJogo[]> = {
     { rota: '/jogo', titulo: 'Ervilhas de Mendel', descricao: 'Cruze ervilhas e descubra a genética', emoji: '🫛', cor: '#2EC4B6', corClara: '#DDF6F3', emBreve: true },
   ],
 };
-
-// Estrelas pelo número de erros
-export function estrelasPorErros(erros: number, total: number) {
-  if (erros <= Math.floor(total * 0.15)) return 3;
-  if (erros <= Math.ceil(total * 0.5)) return 2;
-  return 1;
-}
