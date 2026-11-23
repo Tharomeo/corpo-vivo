@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { ActivityIndicator, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { destinoInicial, useConta } from '../lib/conta';
+import { problemaConfiguracao } from '../lib/supabase';
 import { cores, sombra } from '../theme';
 
 // Entrar ou criar conta: e-mail -> código de 6 números (sem senha)
@@ -69,6 +70,11 @@ export default function Entrar() {
               : `Enviamos um código para ${email.trim().toLowerCase()}. Digite abaixo.`}
           </Text>
 
+          {problemaConfiguracao && (
+            <View style={[styles.aviso, { backgroundColor: '#FFE4EC' }]}>
+              <Text style={styles.avisoTexto}>⚠️ {problemaConfiguracao}</Text>
+            </View>
+          )}
           {conta.modoTeste && (
             <View style={styles.aviso}>
               <Text style={styles.avisoTexto}>

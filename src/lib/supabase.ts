@@ -5,13 +5,21 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 import { AppState, Platform } from 'react-native';
 
-const URL = process.env.EXPO_PUBLIC_SUPABASE_URL ?? '';
-const CHAVE = process.env.EXPO_PUBLIC_SUPABASE_KEY ?? '';
+// Limpa espaços e aspas que às vezes vêm junto ao copiar
+const limpar = (v?: string) => (v ?? '').trim().replace(/^['"]|['"]$/g, '').replace(/\/+$/, '');
+const URL_SUPABASE = limpar(process.env.EXPO_PUBLIC_SUPABASE_URL);
+const CHAVE = limpar(process.env.EXPO_PUBLIC_SUPABASE_KEY);
 
-export const servidorConfigurado = Boolean(URL && CHAVE);
+// Só liga o servidor se a URL for do tipo https://xxxx.supabase.co (ou http para testes locais)
+const urlValida = /^https?:\/\/[^\s/]+\.[^\s/]+$/.test(URL_SUPABASE) && !URL_SUPABASE.includes('SEU-PROJETO');
+export const servidorConfigurado = Boolean(urlValida && CHAVE && !CHAVE.startsWith('sua-chave'));
+export const problemaConfiguracao =
+  URL_SUPABASE && !urlValida
+    ? `A URL do Supabase no .env.local está inválida: "${URL_SUPABASE}". Use o formato https://xxxx.supabase.co`
+    : null;
 
 export const supabase: SupabaseClient | null = servidorConfigurado
-  ? createClient(URL, CHAVE, {
+  ? createClient(URL_SUPABASE, CHAVE, {
       auth: {
         storage: Platform.OS === 'web' ? undefined : AsyncStorage,
         autoRefreshToken: true,
