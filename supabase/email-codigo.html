@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light">
+<meta name="supported-color-schemes" content="light">
+<title>Seu código do Corpo Vivo</title>
+</head>
+<body style="margin:0; padding:0; background-color:#FFF9F0; -webkit-text-size-adjust:100%;">
+  <!-- Texto que aparece na prévia da caixa de entrada -->
+  <div style="display:none; max-height:0; overflow:hidden; opacity:0; font-size:1px; line-height:1px; color:#FFF9F0;">
+    Seu código para entrar no Corpo Vivo é {{ .Token }}
+  </div>
+
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#FFF9F0" style="background-color:#FFF9F0;">
+    <tr>
+      <td align="center" style="padding:32px 16px;">
+
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:480px;">
+
+          <!-- Marca -->
+          <tr>
+            <td align="center" style="padding-bottom:20px;">
+              <table role="presentation" cellpadding="0" cellspacing="0" border="0">
+                <tr>
+                  <td align="center" bgcolor="#F1E8FF" style="background-color:#F1E8FF; border-radius:16px; width:48px; height:48px; font-size:26px; line-height:48px;">🧠</td>
+                  <td width="8"></td>
+                  <td align="center" bgcolor="#FFE6EA" style="background-color:#FFE6EA; border-radius:16px; width:48px; height:48px; font-size:26px; line-height:48px;">❤️</td>
+                  <td width="8"></td>
+                  <td align="center" bgcolor="#E3F7FF" style="background-color:#E3F7FF; border-radius:16px; width:48px; height:48px; font-size:26px; line-height:48px;">🫁</td>
+                  <td width="8"></td>
+                  <td align="center" bgcolor="#FFF7E3" style="background-color:#FFF7E3; border-radius:16px; width:48px; height:48px; font-size:26px; line-height:48px;">🦴</td>
+                </tr>
+              </table>
+              <div style="font-family:'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size:32px; font-weight:900; color:#2B2350; letter-spacing:-0.5px; padding-top:14px;">
+                Corpo <span style="color:#FF5D8F;">Vivo</span>
+              </div>
+            </td>
+          </tr>
+
+          <!-- Cartão -->
+          <tr>
+            <td bgcolor="#FFFFFF" style="background-color:#FFFFFF; border-radius:28px; padding:36px 28px; box-shadow:0 8px 24px rgba(43,35,80,0.10);">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                <tr>
+                  <td align="center" style="font-family:'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size:44px; line-height:52px;">👋</td>
+                </tr>
+                <tr>
+                  <td align="center" style="font-family:'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size:24px; font-weight:900; color:#2B2350; padding-top:8px;">
+                    Seu código chegou!
+                  </td>
+                </tr>
+                <tr>
+                  <td align="center" style="font-family:'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size:16px; line-height:24px; color:#6E6893; padding-top:8px;">
+                    Digite este código no app para entrar na sua conta:
+                  </td>
+                </tr>
+
+                <!-- Código -->
+                <tr>
+                  <td align="center" style="padding:24px 0 8px;">
+                    <table role="presentation" cellpadding="0" cellspacing="0" border="0">
+                      <tr>
+                        <td align="center" bgcolor="#ECE6FF" style="background-color:#ECE6FF; border:2px dashed #7B5CFA; border-radius:20px; padding:18px 26px 18px 36px;">
+                          <span style="font-family:'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size:40px; font-weight:900; letter-spacing:10px; color:#7B5CFA;">{{ .Token }}</span>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+                <tr>
+                  <td align="center" style="font-family:'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size:13px; font-weight:700; color:#6E6893; padding-top:6px;">
+                    ⏱️ O código vale por pouco tempo e só pode ser usado uma vez.
+                  </td>
+                </tr>
+
+                <!-- Separador -->
+                <tr>
+                  <td style="padding:28px 0 0;">
+                    <div style="height:2px; background-color:#F1ECFF; line-height:2px; font-size:2px;">&nbsp;</div>
+                  </td>
+                </tr>
+
+                <tr>
+                  <td style="font-family:'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size:14px; line-height:21px; color:#6E6893; padding-top:20px;">
+                    <strong style="color:#2B2350;">Não pediu este código?</strong> Pode ignorar este e-mail com tranquilidade. Ninguém entra na sua conta sem ele.
+                  </td>
+                </tr>
+                <tr>
+                  <td style="font-family:'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size:14px; line-height:21px; color:#6E6893; padding-top:10px;">
+                    🔒 A equipe do Corpo Vivo nunca pede este código por mensagem, telefone ou rede social.
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Rodapé -->
+          <tr>
+            <td align="center" style="font-family:'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size:12px; line-height:18px; color:#A39DBF; padding-top:22px;">
+              Corpo Vivo · Explore o corpo humano por dentro, camada por camada.<br>
+              Este é um e-mail automático, não precisa responder.
+            </td>
+          </tr>
+
+        </table>
+
+      </td>
+    </tr>
+  </table>
+</body>
+</html>

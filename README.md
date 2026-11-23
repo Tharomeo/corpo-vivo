@@ -48,6 +48,7 @@ Para ligar o servidor:
 2. No SQL Editor, rode `supabase/schema.sql`.
 3. Em Authentication > Emails > Templates, no modelo **Magic Link**, inclua o código no texto do e-mail,
    por exemplo: `Seu código do Corpo Vivo é {{ .Token }}`. Sem isso o e-mail chega só com um link.
+   Há um modelo pronto e estilizado em `supabase/email-codigo.html` (cole no campo do corpo do e-mail).
 4. Copie `.env.example` para `.env.local` e preencha a URL e a chave publishable (ou anon),
    que ficam em Project Settings > API.
 5. Reinicie o `npx expo start`.
