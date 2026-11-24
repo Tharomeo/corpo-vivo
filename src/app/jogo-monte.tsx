@@ -3,7 +3,7 @@ import { Animated, PanResponder, StyleSheet, Text, useWindowDimensions, View } f
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Balao, FimDeJogo, Placar, TopoJogo } from '../components/jogos/Moldura';
 import { Orgao2D } from '../components/jogos/Orgao2D';
-import { ENCAIXES, FASES_MONTE } from '../data/jogos';
+import { ENCAIXES, FASES_MONTE, NOME_PECA } from '../data/jogos';
 import { pontosParciais, type ModoId } from '../lib/pontos';
 import { cores } from '../theme';
 import { embaralhar } from '../utils/embaralhar';
@@ -99,6 +99,12 @@ function Peca({ id, inicio, u, onSolta }: { id: string; inicio: Ponto; u: number
       ]}
     >
       <Orgao2D peca={e.peca} w={w} h={h} />
+      {/* Nome embaixo do órgão, para ficar fácil de reconhecer */}
+      <View pointerEvents="none" style={[styles.nomeCaixa, { top: caixaH - 4, left: caixaW / 2 - 48 }]}>
+        <Text style={styles.nome} numberOfLines={1}>
+          {NOME_PECA[e.peca]}
+        </Text>
+      </View>
     </Animated.View>
   );
 }
@@ -156,7 +162,7 @@ export default function MonteOCorpo() {
 
   const colunas = 4;
   const celW = W / colunas;
-  const celH = 70;
+  const celH = 84; // órgão + nome
   const topoBandeja = ALTURA_CORPO * u + 16;
   const linhas = Math.ceil(ordem.length / colunas);
   // Posições iniciais na bandeja, memorizadas pelo mesmo motivo
@@ -166,7 +172,7 @@ export default function MonteOCorpo() {
         const e = ENCAIXES[id];
         const caixaW = Math.max(e.w * u, 56);
         const caixaH = Math.max(e.h * u, 56);
-        return { x: (i % colunas) * celW + (celW - caixaW) / 2, y: topoBandeja + Math.floor(i / colunas) * celH + (celH - caixaH) / 2 };
+        return { x: (i % colunas) * celW + (celW - caixaW) / 2, y: topoBandeja + Math.floor(i / colunas) * celH + (celH - 16 - caixaH) / 2 };
       }),
     [ordem, u, celW, topoBandeja],
   );
@@ -302,6 +308,8 @@ const styles = StyleSheet.create({
     borderRadius: 24,
     backgroundColor: '#F1ECFF',
   },
+  nomeCaixa: { position: 'absolute', width: 96, alignItems: 'center' },
+  nome: { textAlign: 'center', fontSize: 11.5, fontWeight: '900', color: cores.texto },
   peca: {
     position: 'absolute',
     left: 0,

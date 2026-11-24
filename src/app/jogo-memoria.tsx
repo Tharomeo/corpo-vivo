@@ -12,6 +12,7 @@ import { embaralhar } from '../utils/embaralhar';
 
 const COR = '#2EC4B6';
 const PARES = 6;
+const SEGUNDOS_PARA_MEMORIZAR = 3;
 
 type Carta = { chave: string; par: Peca2D; tipo: 'orgao' | 'funcao'; texto: string };
 
@@ -84,6 +85,17 @@ export default function Memoria() {
   const [inicio, setInicio] = useState(() => Date.now());
   const [ultimoPar, setUltimoPar] = useState(0);
   const [balao, setBalao] = useState<{ texto: string; n: number } | null>(null);
+  // Começa com tudo aberto para memorizar; o tempo do jogo só conta depois
+  const [memorizando, setMemorizando] = useState(SEGUNDOS_PARA_MEMORIZAR);
+
+  useEffect(() => {
+    if (memorizando <= 0) return;
+    const t = setTimeout(() => {
+      if (memorizando === 1) setInicio(Date.now());
+      setMemorizando((m) => m - 1);
+    }, 1000);
+    return () => clearTimeout(t);
+  }, [memorizando]);
 
   // Duas cartas abertas: confere o par
   useEffect(() => {
@@ -106,6 +118,7 @@ export default function Memoria() {
   }, [abertas, cartas]);
 
   const abrir = (i: number) => {
+    if (memorizando > 0) return;
     if (abertas.length >= 2) return;
     if (abertas.length === 1) setJogadas((j) => j + 1);
     setAbertas((x) => [...x, i]);
@@ -119,6 +132,7 @@ export default function Memoria() {
     setBalao(null);
     setRodada((r) => r + 1);
     setInicio(Date.now());
+    setMemorizando(SEGUNDOS_PARA_MEMORIZAR);
   };
 
   if (achados.length === PARES) {
@@ -137,14 +151,22 @@ export default function Memoria() {
 
   return (
     <SafeAreaView style={styles.tela} edges={['top', 'bottom']}>
-      <TopoJogo titulo="Jogo da memória" cor={COR} direita={<Placar texto={`⭐ ${pontosParciais(achados.length, Math.max(0, jogadas - achados.length - (abertas.length === 2 ? 1 : 0)))}`} cor={COR} />} />
-      <Text style={styles.instrucao}>Ache o par de cada órgão com o que ele faz</Text>
+      <TopoJogo
+        titulo="Jogo da memória"
+        cor={COR}
+        direita={
+          <Placar texto={`⭐ ${pontosParciais(achados.length, Math.max(0, jogadas - achados.length - (abertas.length === 2 ? 1 : 0)))}`} cor={COR} />
+        }
+      />
+      <Text style={[styles.instrucao, memorizando > 0 && styles.memorize]}>
+        {memorizando > 0 ? `👀 Memorize as cartas! Fecham em ${memorizando}...` : 'Ache o par de cada órgão com o que ele faz'}
+      </Text>
       <View style={[styles.grade, { width: largura * 3 + 20 }]}>
         {cartas.map((c, i) => (
           <CartaView
             key={`${rodada}-${c.chave}`}
             carta={c}
-            aberta={abertas.includes(i) || achados.includes(c.par)}
+            aberta={memorizando > 0 || abertas.includes(i) || achados.includes(c.par)}
             achada={achados.includes(c.par)}
             largura={largura}
             onPress={() => abrir(i)}
@@ -159,6 +181,7 @@ export default function Memoria() {
 const styles = StyleSheet.create({
   tela: { flex: 1, backgroundColor: cores.fundo },
   instrucao: { textAlign: 'center', fontSize: 14, fontWeight: '700', color: cores.textoSuave, marginBottom: 12 },
+  memorize: { color: COR, fontSize: 16, fontWeight: '900' },
   grade: { alignSelf: 'center', flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
   carta: { borderRadius: 18, alignItems: 'center', justifyContent: 'center', padding: 8, ...sombra },
   cartaFechada: { backgroundColor: COR },
