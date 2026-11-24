@@ -79,8 +79,11 @@ Para adicionar ou corrigir conteúdo, edite `src/data/sistemas.ts`. Cada peça 3
 
 ## Licença e créditos
 
-- Código: MIT (ver `LICENSE`).
+- Código: [GNU AGPL-3.0](https://www.gnu.org/licenses/agpl-3.0.html) (ver `LICENSE`). Copyright (C) 2026 Thais Romeo.
+  - Pode estudar, usar, modificar e redistribuir.
+  - Quem distribuir uma versão modificada, ou colocar ela no ar para outras pessoas usarem, precisa manter os créditos e publicar o código completo dessa versão sob a mesma licença.
 - Conteúdo do Ensino Fundamental: aberto, sob a mesma licença do código.
+- O nome "Corpo Vivo" e a logo não estão incluídos na licença: não podem ser usados em versões derivadas.
 - O modelo atual é estilizado e foi feito do zero com formas do three.js.
 - Quando o modelo anatômico entrar, ele virá do [Z-Anatomy](https://github.com/LluisV/Z-Anatomy) (CC BY-SA 4.0), baseado no BodyParts3D (CC BY-SA 2.1 Japan, Database Center for Life Science). Os arquivos 3D adaptados ficarão sob CC BY-SA 4.0, com os créditos completos aqui.
 - Conteúdo do Ensino Médio e da Medicina não faz parte deste repositório.

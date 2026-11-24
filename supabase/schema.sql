@@ -53,7 +53,7 @@ grant execute on function public.apelido_disponivel(text) to authenticated;
 create table if not exists public.jogadas (
   id bigint generated always as identity primary key,
   jogador_id uuid not null default auth.uid() references public.perfis (id) on delete cascade,
-  jogo text not null check (jogo in ('monte-1','monte-2','monte-3','caca','viagem-comida','viagem-ar','viagem-agua','memoria')),
+  jogo text not null constraint jogadas_jogo_check check (jogo ~ '^[a-z0-9-]{2,30}$'),
   nivel text not null check (nivel in ('iniciais','finais')),
   pontos int not null check (pontos between 0 and 5000),
   acertos int not null check (acertos between 0 and 50),
