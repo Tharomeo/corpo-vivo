@@ -145,38 +145,75 @@ export const VIAGENS: Viagem[] = [
 ];
 
 // ---------- Caça ao órgão (no boneco 3D) ----------
-export type Alvo3D = { orgao: string; nome: string; camada: 'pele' | 'musculos' | 'ossos'; emoji: string };
+// Lista com todas as partes que dá para tocar no boneco. A cada partida o jogo sorteia
+// algumas, evitando repetir as das últimas partidas. "finais: true" = só nos Anos Finais.
+// A camada (pele, músculos, ossos e órgãos) vem do sistema da parte.
 
-export const ALVOS_CACA: Record<Nivel, Alvo3D[]> = {
-  iniciais: [
-    { orgao: 'coracao', nome: 'o coração', camada: 'ossos', emoji: '🫀' },
-    { orgao: 'pulmoes', nome: 'os pulmões', camada: 'ossos', emoji: '🫁' },
-    { orgao: 'encefalo', nome: 'o cérebro', camada: 'ossos', emoji: '🧠' },
-    { orgao: 'estomago', nome: 'o estômago', camada: 'ossos', emoji: '🍽️' },
-    { orgao: 'figado', nome: 'o fígado', camada: 'ossos', emoji: '🟤' },
-    { orgao: 'intestino_delgado', nome: 'o intestino', camada: 'ossos', emoji: '🌀' },
-    { orgao: 'bexiga', nome: 'a bexiga', camada: 'ossos', emoji: '🎈' },
-    { orgao: 'rins', nome: 'os rins', camada: 'ossos', emoji: '🫘' },
-    { orgao: 'femur', nome: 'o osso da coxa', camada: 'ossos', emoji: '🦴' },
-    { orgao: 'costelas', nome: 'as costelas', camada: 'ossos', emoji: '🦴' },
-    { orgao: 'biceps', nome: 'o bíceps', camada: 'musculos', emoji: '💪' },
-    { orgao: 'panturrilha', nome: 'a panturrilha', camada: 'musculos', emoji: '🦵' },
-  ],
-  finais: [
-    { orgao: 'pancreas', nome: 'o pâncreas', camada: 'ossos', emoji: '🔎' },
-    { orgao: 'vesicula', nome: 'a vesícula biliar', camada: 'ossos', emoji: '🔎' },
-    { orgao: 'diafragma', nome: 'o diafragma', camada: 'ossos', emoji: '🔎' },
-    { orgao: 'laringe', nome: 'a laringe', camada: 'ossos', emoji: '🔎' },
-    { orgao: 'tronco_encefalico', nome: 'o tronco encefálico', camada: 'ossos', emoji: '🔎' },
-    { orgao: 'cerebelo', nome: 'o cerebelo', camada: 'ossos', emoji: '🔎' },
-    { orgao: 'esterno', nome: 'o esterno', camada: 'ossos', emoji: '🔎' },
-    { orgao: 'ureteres', nome: 'os ureteres', camada: 'ossos', emoji: '🔎' },
-    { orgao: 'aorta', nome: 'a aorta', camada: 'ossos', emoji: '🔎' },
-    { orgao: 'tibia_fibula', nome: 'a tíbia e a fíbula', camada: 'ossos', emoji: '🔎' },
-    { orgao: 'deltoide', nome: 'o deltoide', camada: 'musculos', emoji: '🔎' },
-    { orgao: 'quadriceps', nome: 'o quadríceps', camada: 'musculos', emoji: '🔎' },
-  ],
-};
+export type ParteCaca = { orgao: string; nome: string; finais?: boolean };
+
+export const PARTES_CACA: ParteCaca[] = [
+  // Pele
+  { orgao: 'unhas', nome: 'as unhas' },
+  // Músculos
+  { orgao: 'peitoral', nome: 'o peitoral' },
+  { orgao: 'abdominais', nome: 'os abdominais' },
+  { orgao: 'deltoide', nome: 'o deltoide' },
+  { orgao: 'biceps', nome: 'o bíceps' },
+  { orgao: 'quadriceps', nome: 'o quadríceps' },
+  { orgao: 'gluteo', nome: 'o glúteo' },
+  { orgao: 'panturrilha', nome: 'a panturrilha' },
+  { orgao: 'antebraco', nome: 'os músculos do antebraço', finais: true },
+  { orgao: 'musculos_rosto', nome: 'os músculos do rosto', finais: true },
+  { orgao: 'tendoes', nome: 'o tendão de Aquiles', finais: true },
+  // Ossos
+  { orgao: 'mandibula', nome: 'a mandíbula' },
+  { orgao: 'coluna', nome: 'a coluna vertebral' },
+  { orgao: 'costelas', nome: 'as costelas' },
+  { orgao: 'clavicula', nome: 'a clavícula' },
+  { orgao: 'pelve', nome: 'a pelve (bacia)' },
+  { orgao: 'femur', nome: 'o fêmur, osso da coxa' },
+  { orgao: 'patela', nome: 'a patela, osso do joelho' },
+  { orgao: 'maos', nome: 'os ossos da mão' },
+  { orgao: 'pes', nome: 'os ossos do pé' },
+  { orgao: 'esterno', nome: 'o esterno', finais: true },
+  { orgao: 'umero', nome: 'o úmero', finais: true },
+  { orgao: 'radio_ulna', nome: 'o rádio e a ulna', finais: true },
+  { orgao: 'tibia_fibula', nome: 'a tíbia e a fíbula', finais: true },
+  { orgao: 'cartilagens', nome: 'os discos de cartilagem da coluna', finais: true },
+  // Nervoso
+  { orgao: 'encefalo', nome: 'o cérebro' },
+  { orgao: 'cerebelo', nome: 'o cerebelo', finais: true },
+  { orgao: 'tronco_encefalico', nome: 'o tronco encefálico', finais: true },
+  { orgao: 'medula', nome: 'a medula espinal', finais: true },
+  { orgao: 'nervos', nome: 'os nervos', finais: true },
+  // Circulatório
+  { orgao: 'coracao', nome: 'o coração' },
+  { orgao: 'aorta', nome: 'a aorta', finais: true },
+  { orgao: 'arterias', nome: 'as artérias (vermelhas)', finais: true },
+  { orgao: 'veias', nome: 'as veias (azuis)', finais: true },
+  // Respiratório
+  { orgao: 'pulmoes', nome: 'os pulmões' },
+  { orgao: 'traqueia', nome: 'a traqueia' },
+  { orgao: 'fossas_nasais', nome: 'as fossas nasais', finais: true },
+  { orgao: 'faringe', nome: 'a faringe', finais: true },
+  { orgao: 'laringe', nome: 'a laringe', finais: true },
+  { orgao: 'bronquios', nome: 'os brônquios', finais: true },
+  { orgao: 'diafragma', nome: 'o diafragma', finais: true },
+  // Digestório
+  { orgao: 'boca', nome: 'a boca' },
+  { orgao: 'esofago', nome: 'o esôfago' },
+  { orgao: 'estomago', nome: 'o estômago' },
+  { orgao: 'figado', nome: 'o fígado' },
+  { orgao: 'intestino_delgado', nome: 'o intestino delgado' },
+  { orgao: 'intestino_grosso', nome: 'o intestino grosso' },
+  { orgao: 'pancreas', nome: 'o pâncreas', finais: true },
+  { orgao: 'vesicula', nome: 'a vesícula biliar', finais: true },
+  // Urinário
+  { orgao: 'rins', nome: 'os rins' },
+  { orgao: 'bexiga', nome: 'a bexiga' },
+  { orgao: 'ureteres', nome: 'os ureteres', finais: true },
+  { orgao: 'uretra', nome: 'a uretra', finais: true },
+];
 
 // ---------- Lista de jogos por etapa ----------
 export type InfoJogo = { rota: string; titulo: string; descricao: string; emoji: string; cor: string; corClara: string; emBreve?: boolean };

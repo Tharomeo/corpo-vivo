@@ -5,11 +5,10 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { BodyView } from '../components/BodyView';
 import type { BodyViewHandle, SceneMessage } from '../components/bodyViewTypes';
 import { Balao, FimDeJogo, Placar } from '../components/jogos/Moldura';
-import { ALVOS_CACA, type Alvo3D } from '../data/jogos';
 import { pontosParciais } from '../lib/pontos';
+import { sortearAlvos, type Alvo3D } from '../lib/sorteioCaca';
 import { ORGAOS, SISTEMAS, type Nivel } from '../data/sistemas';
 import { cores, sombra } from '../theme';
-import { embaralhar } from '../utils/embaralhar';
 
 // Caça ao órgão: o app pede uma parte e a pessoa toca nela no boneco 3D.
 
@@ -23,7 +22,7 @@ export default function CacaAoOrgao() {
   const scene = useRef<BodyViewHandle>(null);
 
   const [jogo, setJogo] = useState(0);
-  const [alvos, setAlvos] = useState<Alvo3D[]>(() => embaralhar(ALVOS_CACA[nivel]).slice(0, RODADAS));
+  const [alvos, setAlvos] = useState<Alvo3D[]>(() => sortearAlvos(nivel, RODADAS));
   const [rodada, setRodada] = useState(0);
   const [erros, setErros] = useState(0);
   const [errosNaRodada, setErrosNaRodada] = useState(0);
@@ -84,7 +83,7 @@ export default function CacaAoOrgao() {
   );
 
   const recomeçar = () => {
-    setAlvos(embaralhar(ALVOS_CACA[nivel]).slice(0, RODADAS));
+    setAlvos(sortearAlvos(nivel, RODADAS));
     setRodada(0);
     setErros(0);
     setErrosNaRodada(0);
