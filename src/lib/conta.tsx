@@ -26,11 +26,16 @@ const K_TESTE = 'corpovivo:conta-teste';
 
 function traduzirErro(msg: string) {
   const m = msg.toLowerCase();
-  if (m.includes('rate limit') || m.includes('security purposes')) return 'Muitas tentativas. Espere um minuto e tente de novo.';
-  if (m.includes('expired') || m.includes('invalid')) return 'Código inválido ou vencido. Confira o código ou peça outro.';
-  if (m.includes('email')) return 'Confira o e-mail digitado.';
-  if (m.includes('network') || m.includes('fetch')) return 'Sem conexão com a internet.';
-  return 'Algo deu errado. Tente de novo.';
+  let texto = 'Algo deu errado. Tente de novo.';
+  if (m.includes('not authorized')) texto = 'Esse e-mail ainda não pode receber códigos: falta configurar o SMTP no Supabase.';
+  else if (m.includes('error sending') || m.includes('smtp')) texto = 'O Supabase não conseguiu enviar o e-mail. Confira as configurações de SMTP.';
+  else if (m.includes('signups not allowed') || m.includes('signup')) texto = 'Cadastro por e-mail está desligado no Supabase.';
+  else if (m.includes('rate limit') || m.includes('security purposes')) texto = 'Muitas tentativas. Espere um minuto e tente de novo.';
+  else if (m.includes('expired') || m.includes('token')) texto = 'Código inválido ou vencido. Confira o código ou peça outro.';
+  else if (m.includes('invalid') && m.includes('email')) texto = 'Confira o e-mail digitado.';
+  else if (m.includes('network') || m.includes('fetch')) texto = 'Sem conexão com a internet.';
+  // Enquanto desenvolve, mostra também a mensagem original do Supabase
+  return __DEV__ ? `${texto}\n(${msg})` : texto;
 }
 
 export function ContaProvider({ children }: { children: ReactNode }) {
