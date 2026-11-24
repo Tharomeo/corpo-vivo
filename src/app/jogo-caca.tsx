@@ -125,6 +125,12 @@ export default function CacaAoOrgao() {
         </View>
         <Placar texto={`⭐ ${pontosParciais(rodada + (acertou ? 1 : 0), erros)}`} cor={COR} />
       </View>
+      {/* Volta a câmera ao corpo inteiro depois de dar muito zoom */}
+      <View style={[styles.reset, { top: insets.top + 104 }]} pointerEvents="box-none">
+        <Pressable onPress={() => scene.current?.run('resetView();')} hitSlop={10} style={styles.voltar}>
+          <Text style={styles.resetTexto}>⟲</Text>
+        </Pressable>
+      </View>
 
       <View style={[styles.rodape, { paddingBottom: insets.bottom + 16 }]} pointerEvents="none">
         {balao ? (
@@ -142,6 +148,8 @@ const styles = StyleSheet.create({
   topo: { position: 'absolute', top: 0, left: 0, right: 0, flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: 16 },
   voltar: { width: 44, height: 44, borderRadius: 22, backgroundColor: cores.branco, alignItems: 'center', justifyContent: 'center', ...sombra },
   voltarTexto: { fontSize: 30, lineHeight: 32, color: cores.texto, fontWeight: '700', marginTop: -3 },
+  reset: { position: 'absolute', right: 16 },
+  resetTexto: { fontSize: 22, color: cores.texto, fontWeight: '700' },
   pedido: { flex: 1, backgroundColor: COR, borderRadius: 22, paddingVertical: 10, paddingHorizontal: 16, ...sombra },
   pedidoRotulo: { color: cores.branco, fontSize: 12, fontWeight: '800', opacity: 0.85, textTransform: 'uppercase', letterSpacing: 0.5 },
   pedidoTexto: { color: cores.branco, fontSize: 22, fontWeight: '900', marginTop: 1 },

@@ -67,8 +67,13 @@ const controls = new OrbitControls(camera, renderer.domElement);
 controls.target.copy(HOME_TARGET);
 controls.enableDamping = true;
 controls.dampingFactor = 0.08;
-controls.enablePan = false;
-controls.minDistance = 0.7;
+// Zoom livre: aproxima até partes pequenas (ex.: tronco encefálico), na direção dos dedos,
+// e dois dedos também arrastam a imagem
+controls.enablePan = true;
+controls.screenSpacePanning = true;
+controls.zoomToCursor = true;
+controls.zoomSpeed = 1.2;
+controls.minDistance = 0.12;
 controls.maxDistance = 6;
 controls.autoRotate = true;
 controls.autoRotateSpeed = 1.4;
