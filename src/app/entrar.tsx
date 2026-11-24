@@ -161,7 +161,7 @@ export default function Entrar() {
           {erro && <Text style={styles.erro}>{erro}</Text>}
 
           <View style={styles.premium}>
-            <Text style={styles.premiumTexto}>💳 Em breve: assinatura com cartão para liberar Ensino Médio e Medicina.</Text>
+            <Text style={styles.premiumTexto}>🚀 Em breve: Ensino Médio e Ensino Superior</Text>
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
