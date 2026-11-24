@@ -47,114 +47,75 @@ export function punnett(g1: Genotipo, g2: Genotipo): Genotipo[] {
 }
 
 // ---------- Sistemas em equipe ----------
-// "principais": precisam ser escolhidos. "tambem": ajudam, então não contam como erro se escolhidos.
+// Cada situação tem uma dupla de sistemas: o jogador escolhe exatamente os dois.
 
 export type Situacao = {
   emoji: string;
   texto: string;
-  principais: SistemaId[];
-  tambem: SistemaId[];
+  dupla: [SistemaId, SistemaId];
   explicacao: string;
 };
 
 export const SITUACOES: Situacao[] = [
   {
-    emoji: '🏃',
-    texto: 'Correr para pegar o ônibus',
-    principais: ['nervoso', 'muscular', 'esqueletico', 'respiratorio', 'circulatorio'],
-    tambem: ['tegumentar'],
-    explicacao: 'O cérebro manda a ordem, os músculos puxam os ossos, a respiração acelera e o coração bate mais rápido para levar oxigênio.',
-  },
-  {
-    emoji: '🥪',
-    texto: 'Comer um sanduíche e aproveitar os nutrientes',
-    principais: ['digestorio', 'circulatorio'],
-    tambem: ['nervoso', 'muscular', 'esqueletico'],
-    explicacao: 'O digestório quebra o alimento em nutrientes, e o sangue leva esses nutrientes para todas as células.',
-  },
-  {
-    emoji: '☀️',
-    texto: 'Esfriar o corpo num dia muito quente',
-    principais: ['tegumentar', 'circulatorio'],
-    tambem: ['nervoso'],
-    explicacao: 'A pele solta suor, que evapora e esfria o corpo. Os vasos da pele se alargam e soltam calor.',
-  },
-  {
-    emoji: '🔥',
-    texto: 'Tirar a mão rápido de uma panela quente',
-    principais: ['tegumentar', 'nervoso', 'muscular'],
-    tambem: ['esqueletico'],
-    explicacao: 'A pele sente o calor, os nervos e a medula fazem um reflexo e os músculos puxam a mão antes mesmo de você pensar.',
-  },
-  {
-    emoji: '🚽',
-    texto: 'Limpar o sangue e fazer xixi',
-    principais: ['urinario', 'circulatorio'],
-    tambem: ['nervoso', 'muscular'],
-    explicacao: 'O sangue passa pelos rins, que filtram o que sobra e formam a urina. A bexiga guarda a urina até a hora do xixi.',
+    emoji: '🙋',
+    texto: 'Dobrar o braço',
+    dupla: ['muscular', 'esqueletico'],
+    explicacao: 'O bíceps se contrai e puxa os ossos do antebraço. Músculo sozinho não mexe nada: ele precisa do osso como alavanca.',
   },
   {
     emoji: '💨',
-    texto: 'Levar o oxigênio do ar até os músculos',
-    principais: ['respiratorio', 'circulatorio'],
-    tambem: ['muscular', 'nervoso', 'esqueletico'],
-    explicacao: 'Nos alvéolos, o oxigênio passa do ar para o sangue. O coração bombeia esse sangue até os músculos.',
+    texto: 'Levar o oxigênio do ar até as células',
+    dupla: ['respiratorio', 'circulatorio'],
+    explicacao: 'Nos pulmões, o oxigênio passa do ar para o sangue. O coração bombeia esse sangue para o corpo todo.',
   },
   {
-    emoji: '📝',
-    texto: 'Pensar na resposta de uma prova',
-    principais: ['nervoso'],
-    tambem: ['circulatorio', 'respiratorio', 'muscular', 'esqueletico'],
-    explicacao: 'Pensar, lembrar e decidir é trabalho do encéfalo, a central do sistema nervoso.',
+    emoji: '🥪',
+    texto: 'Levar os nutrientes da comida para o corpo',
+    dupla: ['digestorio', 'circulatorio'],
+    explicacao: 'O intestino absorve os nutrientes e eles entram no sangue, que leva tudo até as células.',
+  },
+  {
+    emoji: '🚽',
+    texto: 'Limpar o sangue e formar o xixi',
+    dupla: ['urinario', 'circulatorio'],
+    explicacao: 'O sangue passa pelos rins, que filtram o que sobra e formam a urina.',
+  },
+  {
+    emoji: '🔥',
+    texto: 'Sentir que a panela está quente',
+    dupla: ['tegumentar', 'nervoso'],
+    explicacao: 'A pele tem sensores de calor. Os nervos levam esse aviso até o cérebro, que entende: está quente!',
+  },
+  {
+    emoji: '😮‍💨',
+    texto: 'Puxar o ar para dentro dos pulmões',
+    dupla: ['respiratorio', 'muscular'],
+    explicacao: 'O diafragma é um músculo. Quando ele desce, os pulmões se enchem de ar.',
   },
   {
     emoji: '🩹',
-    texto: 'Ralar o joelho e o machucado sarar',
-    principais: ['tegumentar', 'circulatorio'],
-    tambem: ['nervoso'],
-    explicacao: 'A pele é a barreira contra micróbios. As plaquetas do sangue fecham o corte e os glóbulos brancos combatem invasores.',
+    texto: 'Fechar um machucado no joelho',
+    dupla: ['tegumentar', 'circulatorio'],
+    explicacao: 'As plaquetas do sangue formam a casquinha e a pele cresce de novo por baixo dela.',
   },
   {
-    emoji: '🧍',
-    texto: 'Ficar em pé sem cair',
-    principais: ['esqueletico', 'muscular'],
-    tambem: ['nervoso'],
-    explicacao: 'Os ossos sustentam o corpo e os músculos ficam levemente contraídos o tempo todo para manter a postura.',
-  },
-  {
-    emoji: '📱',
-    texto: 'Digitar uma mensagem no celular',
-    principais: ['nervoso', 'muscular', 'esqueletico'],
-    tambem: ['tegumentar', 'circulatorio'],
-    explicacao: 'O cérebro comanda os músculos da mão, que movem os ossos dos dedos com muita precisão.',
-  },
-  {
-    emoji: '🤧',
-    texto: 'Espirrar para tirar poeira do nariz',
-    principais: ['respiratorio', 'nervoso', 'muscular'],
-    tambem: ['esqueletico'],
-    explicacao: 'Os nervos sentem a poeira e mandam o diafragma e os músculos do peito soltarem o ar com força.',
-  },
-  {
-    emoji: '🥤',
-    texto: 'Beber água e repor o que perdeu no suor',
-    principais: ['digestorio', 'circulatorio'],
-    tambem: ['urinario', 'nervoso', 'tegumentar', 'muscular'],
-    explicacao: 'A água é absorvida no intestino e vai para o sangue. Depois os rins controlam quanto dela fica no corpo.',
+    emoji: '⚽',
+    texto: 'Decidir chutar a bola',
+    dupla: ['nervoso', 'muscular'],
+    explicacao: 'O cérebro decide e manda a ordem pelos nervos. Os músculos da perna obedecem e fazem o chute.',
   },
   {
     emoji: '😋',
-    texto: 'Mastigar e engolir a comida',
-    principais: ['digestorio', 'muscular', 'esqueletico'],
-    tambem: ['nervoso'],
-    explicacao: 'Os dentes e a mandíbula trituram, os músculos mastigam e a língua empurra o alimento para o esôfago.',
+    texto: 'Empurrar a comida até o estômago',
+    dupla: ['digestorio', 'muscular'],
+    explicacao: 'O esôfago tem músculos que se contraem em ondas e empurram a comida para baixo.',
   },
   {
-    emoji: '🤿',
-    texto: 'Encher bem o pulmão antes de mergulhar',
-    principais: ['respiratorio', 'muscular'],
-    tambem: ['nervoso', 'esqueletico', 'circulatorio'],
-    explicacao: 'O diafragma desce e os músculos entre as costelas abrem o peito, e o ar entra nos pulmões.',
+    emoji: '🎂',
+    texto: 'Sentir o cheiro de um bolo',
+    dupla: ['respiratorio', 'nervoso'],
+    explicacao: 'O cheiro entra pelo nariz junto com o ar. Os nervos do olfato levam a informação até o cérebro.',
   },
 ];
 

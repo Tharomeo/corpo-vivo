@@ -228,7 +228,7 @@ export const JOGOS: Record<Nivel, InfoJogo[]> = {
   finais: [
     { rota: '/jogo-caca', titulo: 'Caça ao órgão: desafio', descricao: 'Partes difíceis de achar no boneco 3D', emoji: '🔍', cor: '#7B5CFA', corClara: '#ECE6FF' },
     { rota: '/jogo-mendel', titulo: 'Ervilhas de Mendel', descricao: 'Cruze ervilhas e descubra a genética', emoji: '🫛', cor: '#1E9C90', corClara: '#DDF6F3' },
-    { rota: '/jogo-sistemas', titulo: 'Sistemas em equipe', descricao: 'Descubra quais sistemas trabalham juntos', emoji: '🤝', cor: '#E8820C', corClara: '#FFF1DE' },
+    { rota: '/jogo-sistemas', titulo: 'Sistemas em equipe', descricao: 'Descubra a dupla de sistemas de cada tarefa', emoji: '🤝', cor: '#E8820C', corClara: '#FFF1DE' },
     { rota: '/jogo-prato', titulo: 'Prato equilibrado', descricao: 'Monte refeições com comida de verdade', emoji: '🍽️', cor: '#2BA84A', corClara: '#E3F7E8' },
   ],
 };

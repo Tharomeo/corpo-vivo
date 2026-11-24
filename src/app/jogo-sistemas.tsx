@@ -8,11 +8,12 @@ import { pontosParciais } from '../lib/pontos';
 import { cores, sombra } from '../theme';
 import { embaralhar } from '../utils/embaralhar';
 
-// Sistemas em equipe: para cada situação, escolha os sistemas que trabalham juntos nela.
+// Sistemas em equipe: cada situação é feita por uma dupla de sistemas. Escolha os dois.
 
 const COR = '#E8820C';
 const COR_CLARA = '#FFF1DE';
 const RODADAS = 8;
+const TAMANHO_DUPLA = 2;
 const ORDEM_SISTEMAS = Object.keys(SISTEMAS) as SistemaId[];
 
 const nomeCurto = (s: SistemaId) => {
@@ -27,7 +28,6 @@ export default function SistemasEmEquipe() {
   const [marcados, setMarcados] = useState<SistemaId[]>([]);
   const [respondido, setRespondido] = useState(false);
   const [erros, setErros] = useState(0);
-  const [faltando, setFaltando] = useState<SistemaId[]>([]);
   const [sobrando, setSobrando] = useState<SistemaId[]>([]);
   const [inicio, setInicio] = useState(() => Date.now());
   const [fim, setFim] = useState<number | null>(null);
@@ -38,26 +38,25 @@ export default function SistemasEmEquipe() {
 
   const marcar = (id: SistemaId) => {
     if (respondido) return;
+    if (!marcados.includes(id) && marcados.length >= TAMANHO_DUPLA) {
+      setAviso((a) => ({ texto: 'Só dois sistemas! Desmarque um para trocar.', tipo: 'dica', n: (a?.n ?? 0) + 1 }));
+      return;
+    }
     setMarcados((m) => (m.includes(id) ? m.filter((x) => x !== id) : [...m, id]));
     setSobrando((x) => x.filter((y) => y !== id));
-    setFaltando([]);
   };
 
   const conferir = () => {
-    const falta = s.principais.filter((p) => !marcados.includes(p));
-    const sobra = marcados.filter((m) => !s.principais.includes(m) && !s.tambem.includes(m));
-    if (falta.length === 0 && sobra.length === 0) {
+    const sobra = marcados.filter((m) => !s.dupla.includes(m));
+    if (sobra.length === 0) {
       setRespondido(true);
       setAviso((a) => ({ texto: `✨ ${s.explicacao}`, tipo: 'acerto', n: (a?.n ?? 0) + 1 }));
       return;
     }
     setErros((e) => e + 1);
-    setFaltando(falta);
     setSobrando(sobra);
-    const partes: string[] = [];
-    if (sobra.length) partes.push(`${sobra.map(nomeCurto).join(', ')} não ${sobra.length === 1 ? 'é essencial' : 'são essenciais'} aqui.`);
-    if (falta.length) partes.push(`Falta${falta.length === 1 ? '' : 'm'} ${falta.length} ${falta.length === 1 ? 'sistema' : 'sistemas'} na equipe.`);
-    setAviso((a) => ({ texto: partes.join(' '), tipo: 'dica', n: (a?.n ?? 0) + 1 }));
+    const texto = sobra.length === 2 ? 'Nenhum dos dois faz parte da dupla. Tente de novo!' : `${nomeCurto(sobra[0])} não faz parte da dupla. Um você acertou!`;
+    setAviso((a) => ({ texto, tipo: 'dica', n: (a?.n ?? 0) + 1 }));
   };
 
   const proxima = () => {
@@ -68,7 +67,6 @@ export default function SistemasEmEquipe() {
     setI(i + 1);
     setMarcados([]);
     setRespondido(false);
-    setFaltando([]);
     setSobrando([]);
     setAviso(null);
   };
@@ -80,7 +78,6 @@ export default function SistemasEmEquipe() {
     setMarcados([]);
     setRespondido(false);
     setErros(0);
-    setFaltando([]);
     setSobrando([]);
     setAviso(null);
     setFim(null);
@@ -112,14 +109,14 @@ export default function SistemasEmEquipe() {
           <Text style={styles.situacaoEmoji}>{s.emoji}</Text>
           <Text style={styles.situacaoTexto}>{s.texto}</Text>
         </View>
-        <Text style={styles.instrucao}>Quais sistemas são os principais nessa tarefa?</Text>
+        <Text style={styles.instrucao}>Qual dupla de sistemas faz isso? Escolha 2.</Text>
 
         <View style={styles.grade}>
           {ORDEM_SISTEMAS.map((id) => {
             const sis = SISTEMAS[id];
             const ligado = marcados.includes(id);
             const errado = sobrando.includes(id);
-            const principal = respondido && s.principais.includes(id);
+            const principal = respondido && s.dupla.includes(id);
             return (
               <Pressable
                 key={id}
@@ -142,8 +139,6 @@ export default function SistemasEmEquipe() {
           })}
         </View>
 
-        {faltando.length > 0 && <Text style={styles.dica}>Dica: pense em quem dá a ordem, quem se move e quem leva as coisas pelo corpo.</Text>}
-
         <View style={styles.balaoArea}>{aviso && <Balao key={aviso.n} texto={aviso.texto} tipo={aviso.tipo} />}</View>
 
         {respondido ? (
@@ -153,10 +148,10 @@ export default function SistemasEmEquipe() {
         ) : (
           <Pressable
             onPress={conferir}
-            disabled={marcados.length === 0}
-            style={({ pressed }) => [styles.botao, marcados.length === 0 && styles.botaoDesligado, pressed && styles.apertado]}
+            disabled={marcados.length < TAMANHO_DUPLA}
+            style={({ pressed }) => [styles.botao, marcados.length < TAMANHO_DUPLA && styles.botaoDesligado, pressed && styles.apertado]}
           >
-            <Text style={styles.botaoTexto}>{marcados.length === 0 ? 'Escolha os sistemas' : 'Conferir equipe'}</Text>
+            <Text style={styles.botaoTexto}>{marcados.length < TAMANHO_DUPLA ? `Escolha ${TAMANHO_DUPLA - marcados.length} ${marcados.length === 1 ? 'sistema' : 'sistemas'}` : 'Conferir dupla'}</Text>
           </Pressable>
         )}
       </ScrollView>
@@ -192,7 +187,6 @@ const styles = StyleSheet.create({
   sistemaEmoji: { fontSize: 24 },
   sistemaNome: { flex: 1, fontSize: 15, fontWeight: '800', color: cores.texto },
   check: { width: 22, height: 22, borderRadius: 11, color: cores.branco, fontSize: 13, fontWeight: '900', textAlign: 'center', lineHeight: 22, overflow: 'hidden' },
-  dica: { textAlign: 'center', fontSize: 13, fontWeight: '700', color: COR, marginTop: 10 },
   balaoArea: { minHeight: 80, justifyContent: 'center', paddingVertical: 12 },
   botao: { backgroundColor: COR, borderRadius: 999, paddingVertical: 16, alignItems: 'center', ...sombra },
   botaoDesligado: { backgroundColor: '#F2C48E' },
