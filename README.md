@@ -1,6 +1,6 @@
 # Corpo Vivo
 
-App de estudo do corpo humano, do Ensino Fundamental à Medicina. Corpo 3D interativo em camadas, toque numa parte e veja o que ela faz.
+App de estudo do corpo humano para o Ensino Fundamental e o Ensino Médio. Corpo 3D interativo em camadas, toque numa parte e veja o que ela faz.
 
 ![Telas](docs/telas.png)
 
@@ -9,7 +9,7 @@ App de estudo do corpo humano, do Ensino Fundamental à Medicina. Corpo 3D inter
 Protótipo da etapa 1:
 
 - [x] Tela inicial
-- [x] Escolha do ano (Fundamental: Anos Iniciais e Anos Finais; Médio e Medicina bloqueados)
+- [x] Escolha do ano (Fundamental: Anos Iniciais e Anos Finais; Ensino Médio bloqueado)
 - [x] Corpo 3D com três camadas: pele, músculos, ossos e órgãos
 - [x] Toque numa parte: destaca o sistema e abre o cartão com a explicação
 - [x] Texto diferente para Anos Iniciais (simples) e Anos Finais (mais detalhe + "Saiba mais")
@@ -86,4 +86,4 @@ Para adicionar ou corrigir conteúdo, edite `src/data/sistemas.ts`. Cada peça 3
 - O nome "Corpo Vivo" e a logo não estão incluídos na licença: não podem ser usados em versões derivadas.
 - O modelo atual é estilizado e foi feito do zero com formas do three.js.
 - Quando o modelo anatômico entrar, ele virá do [Z-Anatomy](https://github.com/LluisV/Z-Anatomy) (CC BY-SA 4.0), baseado no BodyParts3D (CC BY-SA 2.1 Japan, Database Center for Life Science). Os arquivos 3D adaptados ficarão sob CC BY-SA 4.0, com os créditos completos aqui.
-- Conteúdo do Ensino Médio e da Medicina não faz parte deste repositório.
+- Conteúdo do Ensino Médio não faz parte deste repositório.

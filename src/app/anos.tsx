@@ -6,7 +6,7 @@ import { useConta } from '../lib/conta';
 import { cores, sombra } from '../theme';
 
 type Etapa = {
-  id: Nivel | 'medio' | 'medicina';
+  id: Nivel | 'medio';
   titulo: string;
   anos: string;
   emoji: string;
@@ -39,15 +39,6 @@ const ETAPAS: Etapa[] = [
     emoji: '🧬',
     cor: '#2EC4B6',
     corClara: '#DDF6F3',
-    bloqueada: true,
-  },
-  {
-    id: 'medicina',
-    titulo: 'Medicina',
-    anos: 'Graduação',
-    emoji: '🩺',
-    cor: '#3A86FF',
-    corClara: '#E1ECFF',
     bloqueada: true,
   },
 ];

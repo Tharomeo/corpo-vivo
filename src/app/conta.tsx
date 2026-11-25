@@ -34,14 +34,14 @@ export default function MinhaConta() {
         <View style={[styles.plano, { backgroundColor: premium ? '#FFF4D1' : '#DDF6F3' }]}>
           <Text style={styles.planoNome}>{premium ? '⭐ Premium' : '🌱 Gratuito'}</Text>
           <Text style={styles.planoTexto}>
-            {premium ? 'Tudo liberado: Fundamental, Ensino Médio e Medicina.' : 'Ensino Fundamental completo: corpo 3D, Me testar e jogos.'}
+            {premium ? 'Tudo liberado: Ensino Fundamental e Ensino Médio.' : 'Ensino Fundamental completo: corpo 3D, Me testar e jogos.'}
           </Text>
         </View>
 
         {!premium && (
           <View style={styles.assinar}>
             <Text style={styles.assinarTitulo}>⭐ Premium</Text>
-            <Text style={styles.assinarTexto}>Libera o Ensino Médio e a Medicina.</Text>
+            <Text style={styles.assinarTexto}>Libera o Ensino Médio.</Text>
             <View style={[styles.botao, styles.desligado]}>
               <Text style={styles.botaoTexto}>💳 Assinar com cartão · em breve</Text>
             </View>
