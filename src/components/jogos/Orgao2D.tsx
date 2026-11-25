@@ -15,6 +15,9 @@ const EMOJI: Partial<Record<Peca2D, string>> = {
   ossos: '🦴',
   pele: '🖐️',
   musculo: '💪',
+  olho: '👁️',
+  orelha: '👂',
+  lingua: '👅',
 };
 
 function Carinha({ tam }: { tam: number }) {

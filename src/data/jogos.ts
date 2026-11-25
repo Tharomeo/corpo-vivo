@@ -21,7 +21,10 @@ export type Peca2D =
   | 'sangue'
   | 'ossos'
   | 'pele'
-  | 'musculo';
+  | 'musculo'
+  | 'olho'
+  | 'orelha'
+  | 'lingua';
 
 export const NOME_PECA: Record<Peca2D, string> = {
   cerebro: 'Cérebro',
@@ -43,6 +46,9 @@ export const NOME_PECA: Record<Peca2D, string> = {
   ossos: 'Ossos',
   pele: 'Pele',
   musculo: 'Músculos',
+  olho: 'Olhos',
+  orelha: 'Orelhas',
+  lingua: 'Língua',
 };
 
 // ---------- Monte o corpo ----------
@@ -78,6 +84,10 @@ export const PARES_MEMORIA: { peca: Peca2D; funcao: string }[] = [
   { peca: 'pele', funcao: 'Protege e sente o toque' },
   { peca: 'musculo', funcao: 'Puxam os ossos para mexer' },
   { peca: 'bexiga', funcao: 'Guarda o xixi' },
+  { peca: 'olho', funcao: 'Enxerga as cores e as formas' },
+  { peca: 'orelha', funcao: 'Ouve os sons e ajuda no equilíbrio' },
+  { peca: 'nariz', funcao: 'Sente os cheiros' },
+  { peca: 'lingua', funcao: 'Sente os sabores' },
 ];
 
 // ---------- Viagens (tocar na ordem certa) ----------
