@@ -27,6 +27,7 @@ export default function Corpo() {
   const menu = [
     { id: 'prova', nome: 'Me testar', emoji: '📝', cor: '#FF5D8F' },
     { id: 'jogos', nome: 'Jogos', emoji: '🎮', cor: '#2EC4B6' },
+    { id: 'caderno', nome: 'Caderno', emoji: '📒', cor: '#FFC93C' },
   ] as const;
   const insets = useSafeAreaInsets();
 
@@ -109,7 +110,7 @@ export default function Corpo() {
           {menu.map((m) => (
             <Pressable
               key={m.id}
-              onPress={() => router.push({ pathname: m.id === 'prova' ? '/prova' : '/jogos', params: { nivel } })}
+              onPress={() => router.push({ pathname: `/${m.id}`, params: { nivel } })}
               style={({ pressed }) => [styles.menuItem, pressed && { transform: [{ scale: 0.95 }] }]}
             >
               <View style={[styles.menuEmoji, { backgroundColor: m.cor }]}>
@@ -188,10 +189,10 @@ const styles = StyleSheet.create({
   voltarTexto: { fontSize: 30, lineHeight: 32, color: cores.texto, fontWeight: '700', marginTop: -3 },
   resetTexto: { fontSize: 22, color: cores.texto, fontWeight: '700' },
   menu: { flex: 1, flexDirection: 'row', justifyContent: 'center', gap: 8 },
-  menuItem: { flexDirection: 'row', alignItems: 'center', gap: 7, backgroundColor: cores.branco, borderRadius: 999, paddingVertical: 6, paddingLeft: 6, paddingRight: 14, ...sombra },
+  menuItem: { width: 72, alignItems: 'center', gap: 3, backgroundColor: cores.branco, borderRadius: 18, paddingTop: 6, paddingBottom: 5, ...sombra },
   menuEmoji: { width: 30, height: 30, borderRadius: 15, alignItems: 'center', justifyContent: 'center' },
   menuEmojiTexto: { fontSize: 16 },
-  menuTexto: { fontSize: 14, fontWeight: '800', color: cores.texto },
+  menuTexto: { fontSize: 11.5, fontWeight: '800', color: cores.texto },
   aviso: { position: 'absolute', top: '45%', left: 24, right: 24, backgroundColor: cores.branco, borderRadius: 20, padding: 18, ...sombra },
   avisoTexto: { textAlign: 'center', color: cores.texto, fontWeight: '700', fontSize: 15 },
   rodape: { position: 'absolute', left: 0, right: 0, bottom: 0, paddingHorizontal: 16, alignItems: 'center' },

@@ -1,3 +1,4 @@
+import { router } from 'expo-router';
 import { useEffect, useState, type ReactNode } from 'react';
 import { Animated, Pressable, ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 import { EXTRAS } from '../data/partes';
@@ -147,6 +148,18 @@ function Tags({ sistema, atual, onParte }: { sistema: SistemaId; atual?: string;
   );
 }
 
+// Abre a anotação deste sistema ou parte (a mesma de antes, se já existir)
+function BotaoAnotar({ tema, nivel, cor, corClara }: { tema: string; nivel: Nivel; cor: string; corClara: string }) {
+  return (
+    <Pressable
+      onPress={() => router.push({ pathname: '/anotacao', params: { tema, nivel } })}
+      style={({ pressed }) => [styles.anotar, { borderColor: cor, backgroundColor: corClara }, pressed && { transform: [{ scale: 0.97 }] }]}
+    >
+      <Text style={[styles.anotarTexto, { color: cor }]}>📒 Anotar no caderno</Text>
+    </Pressable>
+  );
+}
+
 // ---------- Cartão do sistema ----------
 export function SistemaCard({
   sistema,
@@ -196,6 +209,7 @@ export function SistemaCard({
           )}
 
           <Text style={styles.texto}>{c.resumo}</Text>
+          <BotaoAnotar tema={sistema} nivel={nivel} cor={s.cor} corClara={s.corClara} />
 
           <Secao titulo="Partes">
             <Text style={styles.dica}>Toque numa parte para ver de perto</Text>
@@ -278,6 +292,7 @@ export function ParteCard({
           <View style={[styles.fato, { borderColor: s.cor }]}>
             <Text style={styles.fatoTexto}>{o.fato}</Text>
           </View>
+          <BotaoAnotar tema={orgao} nivel={nivel} cor={s.cor} corClara={s.corClara} />
 
           <Secao titulo="O que faz">
             <Text style={styles.texto}>{o[nivel]}</Text>
@@ -312,6 +327,8 @@ export function ParteCard({
 }
 
 const styles = StyleSheet.create({
+  anotar: { alignSelf: 'flex-start', borderWidth: 2, borderRadius: 999, paddingVertical: 7, paddingHorizontal: 14, marginTop: 10 },
+  anotarTexto: { fontSize: 14, fontWeight: '900' },
   card: {
     position: 'absolute',
     left: 0,

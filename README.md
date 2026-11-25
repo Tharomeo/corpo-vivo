@@ -45,7 +45,7 @@ de 6 números entra e tudo fica salvo só no celular.
 Para ligar o servidor:
 
 1. Crie um projeto no [Supabase](https://supabase.com).
-2. No SQL Editor, rode `supabase/schema.sql`.
+2. No SQL Editor, rode `supabase/schema.sql` (já inclui tudo). Se o banco já existia, rode só os arquivos novos de `supabase/migracoes/`, em ordem de data.
 3. Em Authentication > Emails > Templates, no modelo **Magic Link**, inclua o código no texto do e-mail,
    por exemplo: `Seu código do Corpo Vivo é {{ .Token }}`. Sem isso o e-mail chega só com um link.
    Há um modelo pronto e estilizado em `supabase/email-codigo.html` (cole no campo do corpo do e-mail).
