@@ -167,6 +167,7 @@ export function SistemaCard({
   nivel,
   onParte,
   onClose,
+  sexo,
   ...bordas
 }: Bordas & {
   sistema: SistemaId;
@@ -174,6 +175,7 @@ export function SistemaCard({
   nivel: Nivel;
   onParte: (orgaoId: string) => void;
   onClose: () => void;
+  sexo?: { atual: 'f' | 'm'; trocar: (s: 'f' | 'm') => void }; // só no sistema reprodutor
 }) {
   const s = SISTEMAS[sistema];
   const c = s[nivel];
@@ -208,8 +210,29 @@ export function SistemaCard({
             </Pressable>
           )}
 
+          {sexo && (
+            <View style={[styles.sexo, { backgroundColor: s.corClara }]}>
+              {(['f', 'm'] as const).map((x) => (
+                <Pressable
+                  key={x}
+                  onPress={() => sexo.trocar(x)}
+                  style={[styles.sexoBotao, sexo.atual === x && { backgroundColor: s.cor }]}
+                >
+                  <Text style={[styles.sexoTexto, { color: sexo.atual === x ? cores.branco : s.cor }]}>{x === 'f' ? 'Feminino' : 'Masculino'}</Text>
+                </Pressable>
+              ))}
+            </View>
+          )}
           <Text style={styles.texto}>{c.resumo}</Text>
           <BotaoAnotar tema={sistema} nivel={nivel} cor={s.cor} corClara={s.corClara} />
+          {nivel === 'finais' && (
+            <Pressable
+              onPress={() => router.push({ pathname: '/celula', params: { sistema, nivel } })}
+              style={({ pressed }) => [styles.chip, { backgroundColor: s.cor }, pressed && { transform: [{ scale: 0.97 }] }]}
+            >
+              <Text style={[styles.chipTexto, { color: cores.branco }]}>🔬 Zoom na célula: {s.celula} ›</Text>
+            </Pressable>
+          )}
 
           <Secao titulo="Partes">
             <Text style={styles.dica}>Toque numa parte para ver de perto</Text>
@@ -241,11 +264,6 @@ export function SistemaCard({
             <Lista itens={c.saude} cor="#2EC4B6" />
           </Secao>
 
-          {nivel === 'finais' && (
-            <View style={[styles.chip, { backgroundColor: s.corClara }]}>
-              <Text style={[styles.chipTexto, { color: s.cor }]}>🔬 Zoom na célula: {s.celula} · em breve</Text>
-            </View>
-          )}
         </>
       )}
     </Moldura>
@@ -327,6 +345,9 @@ export function ParteCard({
 }
 
 const styles = StyleSheet.create({
+  sexo: { flexDirection: 'row', borderRadius: 999, padding: 4, marginBottom: 12, gap: 4 },
+  sexoBotao: { flex: 1, borderRadius: 999, paddingVertical: 9, alignItems: 'center' },
+  sexoTexto: { fontSize: 14, fontWeight: '900' },
   anotar: { alignSelf: 'flex-start', borderWidth: 2, borderRadius: 999, paddingVertical: 7, paddingHorizontal: 14, marginTop: 10 },
   anotarTexto: { fontSize: 14, fontWeight: '900' },
   card: {
@@ -385,6 +406,6 @@ const styles = StyleSheet.create({
   curiosidade: { borderRadius: 18, padding: 14, marginTop: 18 },
   curiosidadeTitulo: { fontSize: 14, fontWeight: '900', marginBottom: 4 },
   curiosidadeTexto: { fontSize: 15, color: cores.texto, lineHeight: 22 },
-  chip: { alignSelf: 'flex-start', borderRadius: 999, paddingVertical: 8, paddingHorizontal: 14, marginTop: 14 },
+  chip: { alignSelf: 'flex-start', borderRadius: 999, paddingVertical: 8, paddingHorizontal: 14, marginTop: 8 },
   chipTexto: { fontSize: 13, fontWeight: '800' },
 });

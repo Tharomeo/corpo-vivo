@@ -10,7 +10,7 @@ type WebViewInstance = { injectJavaScript: (js: string) => void };
 const SafeWebView = WebView as unknown as ComponentType<WebViewProps & { ref?: Ref<WebViewInstance> }>;
 
 // Versão celular: a cena three.js roda dentro de uma WebView.
-export const BodyView = forwardRef<BodyViewHandle, BodyViewProps>(function BodyView({ onMessage }, ref) {
+export const BodyView = forwardRef<BodyViewHandle, BodyViewProps>(function BodyView({ onMessage, html = BODY_HTML }, ref) {
   const web = useRef<WebViewInstance>(null);
 
   useImperativeHandle(ref, () => ({
@@ -22,7 +22,7 @@ export const BodyView = forwardRef<BodyViewHandle, BodyViewProps>(function BodyV
   return (
     <SafeWebView
       ref={web}
-      source={{ html: BODY_HTML, baseUrl: 'https://localhost/' }}
+      source={{ html, baseUrl: 'https://localhost/' }}
       originWhitelist={['*']}
       style={styles.web}
       scrollEnabled={false}

@@ -13,7 +13,10 @@ export type SistemaId =
   | 'circulatorio'
   | 'respiratorio'
   | 'digestorio'
-  | 'urinario';
+  | 'urinario'
+  | 'sensorial'
+  | 'endocrino'
+  | 'reprodutor';
 
 export type Conteudo = {
   resumo: string;
@@ -28,10 +31,56 @@ export type Sistema = {
   cor: string;
   corClara: string;
   partes: string[];
-  celula: string; // célula do zoom (próxima etapa)
+  celula: string; // célula do zoom
+  niveis?: Nivel[]; // etapas em que o sistema aparece (padrão: todas)
   iniciais: Conteudo;
   finais: Conteudo;
 };
+
+// Endócrino e reprodutor só aparecem nos Anos Finais; o mesmo texto vale para os dois campos.
+const ENDOCRINO: Conteudo = {
+      resumo:
+        'O sistema endócrino é formado por glândulas que produzem hormônios, mensageiros químicos lançados no sangue. Eles chegam ao corpo todo, mas só agem nas células que têm receptores para eles. Regulam o crescimento, o uso de energia, o açúcar no sangue e as mudanças da puberdade.',
+      comoFunciona: [
+        'O hipotálamo, no encéfalo, percebe as necessidades do corpo e comanda a hipófise.',
+        'A hipófise produz hormônios que estimulam outras glândulas, como a tireoide, as suprarrenais e as gônadas (ovários e testículos).',
+        'Cada hormônio viaja pelo sangue até as células-alvo, que respondem: crescer, gastar mais energia, guardar glicose...',
+        'Muitos hormônios são controlados por retroalimentação: quando já há hormônio suficiente no sangue, a produção diminui.',
+      ],
+      saibaMais: [
+        'A insulina, produzida pelo pâncreas, faz as células absorverem glicose e baixa o açúcar no sangue. No diabetes, falta insulina ou ela não age direito.',
+        'A adrenalina, das suprarrenais, prepara o corpo para emergências: acelera o coração e a respiração e aumenta a glicose no sangue.',
+        'Na puberdade, a hipófise estimula ovários e testículos. Eles passam a produzir estrogênio e progesterona ou testosterona, responsáveis pelas características sexuais secundárias.',
+        'O sistema nervoso age rápido e por pouco tempo. O endócrino é mais lento, mas seus efeitos duram mais.',
+      ],
+      saude: [
+        'Hormônios só devem ser usados com receita médica. Anabolizantes sem indicação podem prejudicar o coração, o fígado e as gônadas.',
+        'Alimentação equilibrada e atividade física ajudam a prevenir o diabetes tipo 2.',
+        'No Brasil, o sal de cozinha recebe iodo por lei, para evitar o bócio, o aumento da tireoide.',
+      ],
+    };
+
+const REPRODUTOR: Conteudo = {
+      resumo:
+        'O sistema reprodutor permite a reprodução: produz os gametas (óvulos e espermatozoides) e, no sistema feminino, abriga o desenvolvimento do bebê. Ele amadurece na puberdade, sob o comando dos hormônios.',
+      comoFunciona: [
+        'Na puberdade, hormônios da hipófise estimulam os ovários e os testículos a produzir gametas e hormônios sexuais.',
+        'Sistema feminino: em geral, a cada ciclo de cerca de 28 dias, um ovário libera um óvulo (ovulação), que segue pela tuba uterina. Enquanto isso, o útero prepara sua parede interna, o endométrio.',
+        'Se não há fecundação, o endométrio descama e sai pela vagina: é a menstruação, e um novo ciclo começa.',
+        'Sistema masculino: os testículos produzem espermatozoides o tempo todo. Eles passam pelos ductos deferentes e se misturam às secreções da próstata e das glândulas seminais, formando o sêmen, que sai pela uretra.',
+        'A fecundação é o encontro do óvulo com o espermatozoide, em geral na tuba uterina. O zigoto formado se fixa no útero e se desenvolve.',
+      ],
+      saibaMais: [
+        'O óvulo é uma das maiores células do corpo humano. O espermatozoide é uma das menores e se move com o flagelo.',
+        'Cada gameta tem 23 cromossomos, metade do normal. Na fecundação, o zigoto fica com 46, metade de cada pai. Por isso herdamos características dos dois.',
+        'As mudanças da puberdade (pelos, voz, crescimento, mamas, ciclo menstrual) começam em idades diferentes para cada pessoa, e isso é normal.',
+      ],
+      saude: [
+        'Métodos contraceptivos evitam a gravidez. A camisinha, masculina ou feminina, é o único que também protege contra as infecções sexualmente transmissíveis (ISTs).',
+        'A vacina contra o HPV é de graça no SUS, em dose única, para meninas e meninos de 9 a 14 anos. Ela previne cânceres causados pelo vírus.',
+        'Dúvidas sobre o corpo e a puberdade podem ser conversadas com a família, com professores ou na Unidade Básica de Saúde (UBS).',
+      ],
+    };
 
 export const SISTEMAS: Record<SistemaId, Sistema> = {
   tegumentar: {
@@ -435,6 +484,79 @@ export const SISTEMAS: Record<SistemaId, Sistema> = {
       ],
     },
   },
+
+  sensorial: {
+    nome: 'Órgãos dos sentidos',
+    emoji: '👁️',
+    cor: '#1B9AAA',
+    corClara: '#DFF5F7',
+    partes: ['Olhos', 'Orelhas', 'Olfato', 'Língua', 'Pele e tato'],
+    celula: 'Cone e bastonete da retina',
+    iniciais: {
+      resumo:
+        'Os órgãos dos sentidos são as janelas do corpo para o mundo. Com os olhos vemos, com as orelhas ouvimos, com o nariz sentimos cheiros, com a língua sentimos sabores e com a pele sentimos o toque.',
+      comoFunciona: [
+        'Cada órgão dos sentidos percebe uma coisa: luz, som, cheiro, sabor ou toque.',
+        'Os nervos levam essa informação até o cérebro.',
+        'O cérebro entende o que foi percebido: "é a voz da minha mãe", "está quente", "que cheiro bom!".',
+        'Muitas vezes os sentidos trabalham juntos: o cheiro da comida ajuda a sentir o sabor.',
+      ],
+      saibaMais: [
+        'Quando estamos gripados e com o nariz entupido, a comida parece sem gosto.',
+        'O olho funciona parecido com uma câmera: a luz entra pela pupila, a bolinha preta no meio do olho.',
+        'A orelha não serve só para ouvir: lá dentro existe uma parte que ajuda no equilíbrio.',
+      ],
+      saude: [
+        'Nunca olhe diretamente para o Sol, nem de óculos escuros.',
+        'Som muito alto no fone de ouvido pode prejudicar a audição para sempre.',
+        'Não coloque objetos dentro da orelha nem do nariz.',
+      ],
+    },
+    finais: {
+      resumo:
+        'Os órgãos dos sentidos têm receptores, células especializadas que transformam estímulos (luz, som, substâncias químicas, pressão e temperatura) em impulsos nervosos. Os nervos levam esses impulsos até o encéfalo, onde as sensações são interpretadas.',
+      comoFunciona: [
+        'Visão: a luz atravessa a córnea e a pupila, e o cristalino a focaliza na retina. Cones (cores) e bastonetes (pouca luz) geram impulsos que seguem pelo nervo óptico.',
+        'Audição: o som faz vibrar o tímpano e os ossículos (martelo, bigorna e estribo). Na cóclea, as vibrações viram impulsos para o nervo auditivo.',
+        'Olfato e paladar: receptores químicos no alto da cavidade nasal e nos botões gustativos da língua detectam substâncias. Os dois sentidos se combinam para formar o sabor dos alimentos.',
+        'Tato: receptores na pele percebem pressão, vibração, temperatura e dor.',
+      ],
+      saibaMais: [
+        'Na miopia, a imagem se forma antes da retina e a pessoa não enxerga bem de longe: a correção usa lentes divergentes. Na hipermetropia, a imagem se forma depois da retina e a correção usa lentes convergentes.',
+        'Os canais semicirculares da orelha interna informam a posição da cabeça e ajudam no equilíbrio.',
+        'A pupila se fecha na luz forte e se abre no escuro: é um reflexo controlado pelo sistema nervoso autônomo.',
+      ],
+      saude: [
+        'Ouvir sons muito altos com frequência, como fones no volume máximo, pode lesar as células da cóclea de forma permanente.',
+        'Dificuldade para enxergar a lousa merece consulta com oftalmologista: óculos resolvem a maioria dos casos.',
+        'Cotonete dentro do canal da orelha pode empurrar a cera e ferir o tímpano.',
+      ],
+    },
+  },
+
+  endocrino: {
+    nome: 'Sistema endócrino',
+    emoji: '🧪',
+    cor: '#C2307D',
+    corClara: '#FDE6F2',
+    partes: ['Hipófise', 'Tireoide', 'Suprarrenais', 'Pâncreas', 'Ovários', 'Testículos'],
+    celula: 'Célula das ilhotas do pâncreas',
+    niveis: ['finais'],
+    iniciais: ENDOCRINO,
+    finais: ENDOCRINO,
+  },
+
+  reprodutor: {
+    nome: 'Sistema reprodutor',
+    emoji: '🌱',
+    cor: '#5563C1',
+    corClara: '#E8EAFB',
+    partes: ['Ovários', 'Tubas uterinas', 'Útero', 'Vagina', 'Testículos', 'Ductos deferentes', 'Próstata', 'Pênis', 'Gametas'],
+    celula: 'Óvulo e espermatozoide',
+    niveis: ['finais'],
+    iniciais: REPRODUTOR,
+    finais: REPRODUTOR,
+  },
 };
 
 // Tags "Partes" do cartão que têm peça no modelo 3D: ao tocar, a câmera aproxima.
@@ -499,7 +621,32 @@ export const PARTE_ORGAO: Record<string, string> = {
   Bexiga: 'bexiga',
   Uretra: 'uretra',
   Néfrons: 'nefrons',
+  // Sentidos
+  Olhos: 'olhos',
+  Orelhas: 'orelhas',
+  Olfato: 'olfato',
+  Língua: 'lingua',
+  'Pele e tato': 'pele',
+  // Endócrino
+  Hipófise: 'hipofise',
+  Tireoide: 'tireoide',
+  Suprarrenais: 'suprarrenais',
+  Ovários: 'ovarios',
+  Testículos: 'testiculos',
+  // Reprodutor
+  'Tubas uterinas': 'tubas_uterinas',
+  Útero: 'utero',
+  Vagina: 'vagina',
+  'Ductos deferentes': 'ductos_deferentes',
+  Próstata: 'prostata',
+  Pênis: 'penis',
+  Gametas: 'gametas',
 };
+
+// Sistemas de cada etapa (endócrino e reprodutor são só dos Anos Finais)
+export function sistemasDoNivel(nivel: Nivel): SistemaId[] {
+  return (Object.keys(SISTEMAS) as SistemaId[]).filter((id) => !SISTEMAS[id].niveis || SISTEMAS[id].niveis!.includes(nivel));
+}
 
 // Em qual camada do modelo cada sistema aparece
 export function camadaDoSistema(s: SistemaId): 'pele' | 'musculos' | 'ossos' {
@@ -992,5 +1139,120 @@ export const ORGAOS: Record<string, Orgao> = {
     fato: 'Os pequenos filtros dos rins.',
     iniciais: 'Cada rim tem cerca de um milhão de filtrinhos.',
     finais: 'No glomérulo acontece a filtração do sangue; nos túbulos, a reabsorção do que é útil. O que sobra vira urina.',
+  },
+  // Sentidos
+  olhos: {
+    nome: 'Olhos',
+    sistema: 'sensorial',
+    fato: 'Percebem a luz e as cores e mandam as imagens para o cérebro.',
+    iniciais: 'Os olhos são os órgãos da visão. A luz entra pela pupila, a bolinha preta no meio, e o cérebro forma a imagem. As pálpebras e os cílios protegem os olhos.',
+    finais: 'A luz atravessa a córnea, a pupila e o cristalino e forma uma imagem invertida na retina. Cones percebem cores e bastonetes funcionam com pouca luz. O nervo óptico leva os impulsos até o encéfalo, que interpreta a imagem.',
+  },
+  orelhas: {
+    nome: 'Orelhas',
+    sistema: 'sensorial',
+    fato: 'Captam os sons e ajudam no equilíbrio.',
+    iniciais: 'A orelha de fora junta os sons e leva para dentro da cabeça, onde o tímpano vibra. Lá dentro, a orelha também ajuda o corpo a se equilibrar.',
+    finais: 'Orelha externa (pavilhão e canal auditivo), média (tímpano e ossículos: martelo, bigorna e estribo) e interna (cóclea, que transforma vibração em impulso nervoso, e canais semicirculares, do equilíbrio).',
+  },
+  olfato: {
+    nome: 'Olfato',
+    sistema: 'sensorial',
+    fato: 'No alto do nariz ficam as células que sentem os cheiros.',
+    iniciais: 'No alto do nariz existem células que sentem cheiros. Elas avisam o cérebro se o cheiro é bom, ruim ou perigoso, como o de fumaça.',
+    finais: 'O epitélio olfatório, no teto da cavidade nasal, tem receptores químicos que reconhecem moléculas do ar. O nervo olfatório leva os impulsos ao encéfalo. O olfato forma boa parte do sabor dos alimentos.',
+  },
+  lingua: {
+    nome: 'Língua',
+    sistema: 'sensorial',
+    fato: 'Tem papilas que sentem os sabores.',
+    iniciais: 'A língua sente os sabores: doce, salgado, azedo, amargo e umami, o gostinho de caldo de carne. Ela também ajuda a mastigar, engolir e falar.',
+    finais: 'Os botões gustativos ficam nas papilas da língua e percebem cinco sabores básicos: doce, salgado, ácido (azedo), amargo e umami. Todas as regiões da língua percebem todos os sabores: o antigo "mapa da língua" está errado.',
+  },
+  // Endócrino
+  hipofise: {
+    nome: 'Hipófise',
+    sistema: 'endocrino',
+    fato: 'Glândula do tamanho de uma ervilha que comanda outras glândulas.',
+    iniciais: 'Fica na base do encéfalo, ligada ao hipotálamo. Produz o hormônio do crescimento e hormônios que estimulam a tireoide, as suprarrenais e as gônadas. Também libera o hormônio antidiurético, que faz os rins economizarem água.',
+    finais: 'Fica na base do encéfalo, ligada ao hipotálamo. Produz o hormônio do crescimento e hormônios que estimulam a tireoide, as suprarrenais e as gônadas. Também libera o hormônio antidiurético, que faz os rins economizarem água.',
+  },
+  tireoide: {
+    nome: 'Tireoide',
+    sistema: 'endocrino',
+    fato: 'Tem formato de borboleta, na frente do pescoço.',
+    iniciais: 'Produz os hormônios T3 e T4, que regulam o metabolismo: a velocidade com que as células usam energia. Precisa de iodo para fabricar esses hormônios.',
+    finais: 'Produz os hormônios T3 e T4, que regulam o metabolismo: a velocidade com que as células usam energia. Precisa de iodo para fabricar esses hormônios.',
+  },
+  suprarrenais: {
+    nome: 'Suprarrenais',
+    sistema: 'endocrino',
+    fato: 'Ficam em cima dos rins, como chapeuzinhos.',
+    iniciais: 'Produzem a adrenalina, que prepara o corpo para situações de perigo ou estresse, e o cortisol, que ajuda a controlar a glicose e as inflamações.',
+    finais: 'Produzem a adrenalina, que prepara o corpo para situações de perigo ou estresse, e o cortisol, que ajuda a controlar a glicose e as inflamações.',
+  },
+  // Reprodutor
+  ovarios: {
+    nome: 'Ovários',
+    sistema: 'reprodutor',
+    fato: 'Guardam os óvulos e produzem estrogênio e progesterona.',
+    iniciais: 'São duas glândulas nas laterais do útero. A partir da puberdade, em geral liberam um óvulo por ciclo e produzem os hormônios estrogênio e progesterona. Por isso fazem parte também do sistema endócrino.',
+    finais: 'São duas glândulas nas laterais do útero. A partir da puberdade, em geral liberam um óvulo por ciclo e produzem os hormônios estrogênio e progesterona. Por isso fazem parte também do sistema endócrino.',
+  },
+  tubas_uterinas: {
+    nome: 'Tubas uterinas',
+    sistema: 'reprodutor',
+    fato: 'Levam o óvulo do ovário até o útero.',
+    iniciais: 'São dois tubos que ligam a região dos ovários ao útero. É nelas que normalmente acontece a fecundação.',
+    finais: 'São dois tubos que ligam a região dos ovários ao útero. É nelas que normalmente acontece a fecundação.',
+  },
+  utero: {
+    nome: 'Útero',
+    sistema: 'reprodutor',
+    fato: 'Órgão muscular onde o bebê se desenvolve na gravidez.',
+    iniciais: 'É oco e tem paredes de músculo. Sua camada interna, o endométrio, se prepara a cada ciclo para receber o embrião. Se não há gravidez, ela descama na menstruação. No parto, os músculos do útero se contraem.',
+    finais: 'É oco e tem paredes de músculo. Sua camada interna, o endométrio, se prepara a cada ciclo para receber o embrião. Se não há gravidez, ela descama na menstruação. No parto, os músculos do útero se contraem.',
+  },
+  vagina: {
+    nome: 'Vagina',
+    sistema: 'reprodutor',
+    fato: 'Canal que liga o útero ao lado de fora do corpo.',
+    iniciais: 'Canal muscular e elástico que liga o útero ao meio externo. Por ela sai a menstruação, e é por ela que o bebê passa no parto normal.',
+    finais: 'Canal muscular e elástico que liga o útero ao meio externo. Por ela sai a menstruação, e é por ela que o bebê passa no parto normal.',
+  },
+  testiculos: {
+    nome: 'Testículos',
+    sistema: 'reprodutor',
+    fato: 'Produzem os espermatozoides e a testosterona.',
+    iniciais: 'Ficam dentro do escroto, fora do abdome, porque os espermatozoides se formam melhor numa temperatura um pouco mais baixa que a do corpo. Produzem também a testosterona, por isso fazem parte do sistema endócrino.',
+    finais: 'Ficam dentro do escroto, fora do abdome, porque os espermatozoides se formam melhor numa temperatura um pouco mais baixa que a do corpo. Produzem também a testosterona, por isso fazem parte do sistema endócrino.',
+  },
+  ductos_deferentes: {
+    nome: 'Ductos deferentes',
+    sistema: 'reprodutor',
+    fato: 'Levam os espermatozoides dos testículos até a uretra.',
+    iniciais: 'São dois tubos que transportam os espermatozoides. No caminho, recebem as secreções das glândulas seminais e da próstata, formando o sêmen.',
+    finais: 'São dois tubos que transportam os espermatozoides. No caminho, recebem as secreções das glândulas seminais e da próstata, formando o sêmen.',
+  },
+  prostata: {
+    nome: 'Próstata',
+    sistema: 'reprodutor',
+    fato: 'Glândula abaixo da bexiga que produz parte do sêmen.',
+    iniciais: 'Produz um líquido que nutre e protege os espermatozoides. A uretra passa por dentro dela.',
+    finais: 'Produz um líquido que nutre e protege os espermatozoides. A uretra passa por dentro dela.',
+  },
+  penis: {
+    nome: 'Pênis',
+    sistema: 'reprodutor',
+    fato: 'Por ele passa a uretra, que leva a urina e o sêmen para fora.',
+    iniciais: 'Órgão externo do sistema masculino. A uretra, que passa por dentro dele, serve aos sistemas urinário e reprodutor, mas nunca aos dois ao mesmo tempo.',
+    finais: 'Órgão externo do sistema masculino. A uretra, que passa por dentro dele, serve aos sistemas urinário e reprodutor, mas nunca aos dois ao mesmo tempo.',
+  },
+  gametas: {
+    nome: 'Gametas',
+    sistema: 'reprodutor',
+    fato: 'Óvulo e espermatozoide: cada um leva metade das informações genéticas.',
+    iniciais: 'Os gametas têm 23 cromossomos. O óvulo é grande, redondo e não se move sozinho. O espermatozoide é pequeno e nada com o flagelo. Da união dos dois surge o zigoto, com 46 cromossomos.',
+    finais: 'Os gametas têm 23 cromossomos. O óvulo é grande, redondo e não se move sozinho. O espermatozoide é pequeno e nada com o flagelo. Da união dos dois surge o zigoto, com 46 cromossomos.',
   },
 };

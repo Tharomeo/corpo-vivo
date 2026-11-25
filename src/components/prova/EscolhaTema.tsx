@@ -1,7 +1,7 @@
 import { router } from 'expo-router';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { SISTEMAS, type Nivel, type SistemaId } from '../../data/sistemas';
+import { SISTEMAS, sistemasDoNivel, type Nivel } from '../../data/sistemas';
 import { cores, sombra } from '../../theme';
 import type { Tema } from './tipos';
 
@@ -14,7 +14,8 @@ type Props = {
 const QUANTIDADES = [10, 25, 50];
 
 export function EscolhaTema({ nivel, contagem, onEscolher }: Props) {
-  const sistemas = Object.keys(SISTEMAS) as SistemaId[];
+  // Só os sistemas desta etapa que têm perguntas
+  const sistemas = sistemasDoNivel(nivel).filter((id) => (contagem[id] ?? 0) > 0);
 
   return (
     <SafeAreaView style={styles.tela} edges={['top']}>

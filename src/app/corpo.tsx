@@ -35,6 +35,13 @@ export default function Corpo() {
   const [camada, setCamada] = useState<Camada>(camadaInicial);
   const [card, setCard] = useState<CardAtual | null>(foco ? { tipo: 'parte', orgao: foco, sistema: ORGAOS[foco].sistema } : null);
   const [status, setStatus] = useState<'carregando' | 'pronto' | 'erro'>('carregando');
+  // Sistema reprodutor: qual variante está no boneco
+  const [sexo, setSexo] = useState<'f' | 'm'>('f');
+
+  const trocarSexo = (s: 'f' | 'm') => {
+    setSexo(s);
+    run(`setSexo('${s}'); focusSystem('reprodutor');`);
+  };
 
   const run = (js: string) => scene.current?.run(js);
 
@@ -78,8 +85,10 @@ export default function Corpo() {
     (msg: SceneMessage) => {
       if (msg.type === 'ready') {
         setStatus('pronto');
-        scene.current?.run(`setLayer('${camada}');`);
+        scene.current?.run(`setNivel('${nivel}'); setSexo('${sexo}'); setLayer('${camada}');`);
         if (card?.tipo === 'parte') scene.current?.run(`highlight('${card.sistema}'); focusOrgan('${card.orgao}');`);
+      } else if (msg.type === 'sexo') {
+        setSexo(msg.sexo);
       } else if (msg.type === 'error') {
         setStatus('erro');
       } else if (msg.type === 'tap') {
@@ -94,7 +103,7 @@ export default function Corpo() {
         }
       }
     },
-    [camada, card],
+    [camada, card, nivel, sexo],
   );
 
   return (
@@ -162,6 +171,7 @@ export default function Corpo() {
           nivel={nivel}
           onParte={(id) => abrirParte(id, card.sistema)}
           onClose={fecharCard}
+          sexo={card.sistema === 'reprodutor' ? { atual: sexo, trocar: trocarSexo } : undefined}
           topInset={insets.top}
           bottomInset={insets.bottom}
         />

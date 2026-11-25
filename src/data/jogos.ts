@@ -213,6 +213,19 @@ export const PARTES_CACA: ParteCaca[] = [
   { orgao: 'bexiga', nome: 'a bexiga' },
   { orgao: 'ureteres', nome: 'os ureteres', finais: true },
   { orgao: 'uretra', nome: 'a uretra', finais: true },
+  // Sentidos
+  { orgao: 'olhos', nome: 'os olhos' },
+  { orgao: 'orelhas', nome: 'as orelhas' },
+  { orgao: 'lingua', nome: 'a língua' },
+  { orgao: 'olfato', nome: 'o local do olfato, no alto do nariz', finais: true },
+  // Endócrino
+  { orgao: 'hipofise', nome: 'a hipófise', finais: true },
+  { orgao: 'tireoide', nome: 'a tireoide', finais: true },
+  { orgao: 'suprarrenais', nome: 'as glândulas suprarrenais', finais: true },
+  // Reprodutor
+  { orgao: 'utero', nome: 'o útero', finais: true },
+  { orgao: 'ovarios', nome: 'os ovários', finais: true },
+  { orgao: 'testiculos', nome: 'os testículos', finais: true },
 ];
 
 // ---------- Lista de jogos por etapa ----------

@@ -80,4 +80,23 @@ export const EXTRAS: Record<string, ExtraParte> = {
   ureteres: { onde: 'Saem de cada rim e descem até a bexiga.', curiosidade: 'Cada um mede cerca de 25 a 30 centímetros.' },
   bexiga: { onde: 'Na parte de baixo da barriga, atrás do osso do púbis.', curiosidade: 'Num adulto costuma guardar algo entre 400 e 600 mL de urina.' },
   uretra: { onde: 'Sai da bexiga e leva a urina para fora do corpo.', curiosidade: 'É mais curta nas mulheres do que nos homens.' },
+  // Sentidos
+  olhos: { onde: 'Na frente da cabeça, protegidos pelos ossos da órbita.', curiosidade: 'Piscamos milhares de vezes por dia: cada piscada espalha lágrima e limpa o olho.' },
+  orelhas: { onde: 'Dos dois lados da cabeça; a parte que ouve de verdade fica escondida dentro do crânio.', curiosidade: 'O estribo, na orelha média, é o menor osso do corpo humano.' },
+  olfato: { onde: 'No teto da cavidade nasal, logo atrás do nariz.', curiosidade: 'Conseguimos diferenciar uma quantidade enorme de cheiros diferentes.' },
+  lingua: { onde: 'Dentro da boca.', curiosidade: 'Os botões gustativos se renovam a cada uma ou duas semanas.' },
+  // Endócrino
+  hipofise: { onde: 'Na base do encéfalo, atrás dos olhos.', curiosidade: 'Mesmo pequena como uma ervilha, controla várias outras glândulas.' },
+  tireoide: { onde: 'Na frente do pescoço, abaixo do "pomo de adão".', curiosidade: 'Sem iodo na alimentação, ela pode crescer e formar o bócio.' },
+  suprarrenais: { onde: 'Em cima de cada rim.', curiosidade: 'A adrenalina age em segundos: é ela que faz o coração disparar num susto.' },
+  // Reprodutor
+  ovarios: { onde: 'Na parte de baixo da barriga, um de cada lado do útero.', curiosidade: 'Ao nascer, uma menina já tem nos ovários todas as células que podem virar óvulos.' },
+  tubas_uterinas: { onde: 'Saem do alto do útero em direção aos ovários.', curiosidade: 'Por dentro têm pelinhos (cílios) que ajudam a empurrar o óvulo.' },
+  utero: { onde: 'Na pelve, entre a bexiga e o intestino.', curiosidade: 'Na gravidez, ele cresce muitas vezes de tamanho e depois volta ao normal.' },
+  vagina: { onde: 'Liga o útero ao lado de fora do corpo.', curiosidade: 'É bem elástica, o que permite a passagem do bebê no parto.' },
+  testiculos: { onde: 'Dentro do escroto, fora do abdome.', curiosidade: 'Produzem milhões de espermatozoides por dia.' },
+  ductos_deferentes: { onde: 'Sobem dos testículos e passam por trás da bexiga.', curiosidade: 'Cada um mede cerca de 30 a 45 centímetros.' },
+  prostata: { onde: 'Logo abaixo da bexiga.', curiosidade: 'Tem mais ou menos o tamanho de uma noz.' },
+  penis: { onde: 'Na frente da pelve, por fora do corpo.', curiosidade: 'A mesma uretra leva a urina e o sêmen, mas nunca ao mesmo tempo.' },
+  gametas: { onde: 'O óvulo se forma nos ovários e o espermatozoide, nos testículos.', curiosidade: 'O óvulo é visível a olho nu, do tamanho de um pontinho: é uma das maiores células do corpo.' },
 };

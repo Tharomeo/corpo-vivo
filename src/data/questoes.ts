@@ -21,7 +21,7 @@ export type Questao = {
 
 type Bruta = Omit<Questao, 'id' | 'nivel' | 'sistema'>;
 
-const INICIAIS: Record<SistemaId, Bruta[]> = {
+const INICIAIS: Partial<Record<SistemaId, Bruta[]>> = {
   tegumentar: [
     { orgao: 'pele', pergunta: 'Qual é o maior órgão do corpo humano?', opcoes: ['Pele', 'Fígado', 'Coração', 'Cérebro'], explicacao: 'A pele cobre o corpo inteiro, por isso é o maior órgão.' },
     { orgao: 'pele', pergunta: 'Para que serve o suor?', opcoes: ['Refrescar o corpo', 'Deixar a pele colorida', 'Fazer o cabelo crescer', 'Proteger os ossos'], explicacao: 'Quando o suor seca, leva o calor embora e o corpo esfria.' },
@@ -94,9 +94,17 @@ const INICIAIS: Record<SistemaId, Bruta[]> = {
     { orgao: 'rins', pergunta: 'Quantos rins temos?', opcoes: ['Dois', 'Um', 'Três', 'Dez'], explicacao: 'Temos dois rins, na parte de trás da barriga.' },
     { orgao: 'rins', pergunta: 'O xixi é formado com:', opcoes: ['O que o corpo não precisa e foi tirado do sangue', 'O ar que sobrou dos pulmões', 'Pedaços de ossos', 'A comida que não mastigamos'], explicacao: 'Os rins tiram do sangue o que sobra e isso vira urina.' },
   ],
+  sensorial: [
+    { orgao: 'olhos', pergunta: 'Com qual órgão percebemos as cores?', opcoes: ['Olhos', 'Orelhas', 'Nariz', 'Língua'], explicacao: 'Os olhos percebem a luz e as cores e mandam a informação para o cérebro.' },
+    { orgao: 'orelhas', pergunta: 'Além de ouvir, a orelha também ajuda a:', opcoes: ['Manter o equilíbrio', 'Sentir cheiros', 'Sentir sabores', 'Enxergar no escuro'], explicacao: 'Dentro da orelha há uma parte que avisa o cérebro sobre a posição da cabeça.' },
+    { orgao: 'olfato', pergunta: 'Por que a comida parece sem gosto quando estamos gripados?', opcoes: ['O nariz entupido não sente o cheiro da comida', 'A língua para de funcionar', 'Os dentes ficam fracos', 'O estômago fica cheio'], explicacao: 'O cheiro e o sabor trabalham juntos. Sem o cheiro, o gosto fica fraco.' },
+    { orgao: 'lingua', pergunta: 'Qual destes é um sabor que a língua sente?', opcoes: ['Azedo', 'Barulhento', 'Colorido', 'Gelado'], explicacao: 'A língua sente doce, salgado, azedo, amargo e umami.' },
+    { orgao: 'pele', pergunta: 'Com qual sentido percebemos que uma panela está quente?', opcoes: ['Tato', 'Visão', 'Audição', 'Olfato'], explicacao: 'A pele tem sensores de calor, de frio, de toque e de dor.' },
+    { orgao: 'orelhas', pergunta: 'O que pode prejudicar a audição?', opcoes: ['Ouvir música muito alta no fone', 'Comer frutas', 'Dormir cedo', 'Beber água'], explicacao: 'Som muito alto machuca as células que ouvem, e elas não se recuperam.' },
+  ],
 };
 
-const FINAIS: Record<SistemaId, Bruta[]> = {
+const FINAIS: Partial<Record<SistemaId, Bruta[]>> = {
   tegumentar: [
     { orgao: 'pele', pergunta: 'Num dia quente, a pele de uma pessoa fica avermelhada. Isso acontece porque:', opcoes: ['Os vasos da derme se dilatam e mais sangue passa perto da superfície, perdendo calor', 'Os vasos da derme se contraem para guardar calor', 'A melanina é destruída pelo calor', 'A epiderme ganha novos vasos sanguíneos no verão'], explicacao: 'É a vasodilatação: mais sangue perto da superfície troca calor com o ambiente.' },
     { orgao: 'pele', pergunta: 'O suor ajuda a resfriar o corpo porque:', opcoes: ['Ao evaporar, retira calor da pele', 'Já sai gelado das glândulas', 'Fecha os poros e bloqueia o calor', 'Aumenta a produção de melanina'], explicacao: 'A evaporação da água do suor consome calor, que é tirado da pele.' },
@@ -179,11 +187,41 @@ const FINAIS: Record<SistemaId, Bruta[]> = {
     { orgao: 'rins', pergunta: 'Qual hormônio faz os rins reabsorverem mais água quando bebemos pouco?', opcoes: ['Antidiurético (ADH)', 'Insulina', 'Adrenalina', 'Melanina'], explicacao: 'O ADH aumenta a reabsorção de água e deixa a urina concentrada.' },
     { orgao: 'rins', pergunta: 'Quando os rins param de funcionar, o tratamento que substitui a filtração do sangue é:', opcoes: ['Hemodiálise', 'Transfusão de sangue', 'Soro antiofídico', 'Vacina'], explicacao: 'Na hemodiálise uma máquina filtra o sangue. Outra opção é o transplante.' },
   ],
+  sensorial: [
+    { orgao: 'olhos', pergunta: 'Uma aluna não enxerga bem a lousa, mas lê bem de perto. Ela provavelmente tem:', opcoes: ['Miopia, corrigida com lentes divergentes', 'Hipermetropia, corrigida com lentes divergentes', 'Miopia, corrigida com lentes convergentes', 'Daltonismo, corrigido com lentes coloridas'], explicacao: 'Na miopia a imagem se forma antes da retina; lentes divergentes corrigem.' },
+    { orgao: 'olhos', pergunta: 'Ao sair de um lugar escuro para o sol forte, a pupila:', opcoes: ['Diminui, deixando entrar menos luz', 'Aumenta, deixando entrar mais luz', 'Fica do mesmo tamanho', 'Muda de cor'], explicacao: 'É um reflexo do sistema nervoso autônomo que protege a retina.' },
+    { orgao: 'olhos', pergunta: 'As células da retina que permitem enxergar cores são:', opcoes: ['Cones', 'Bastonetes', 'Hemácias', 'Neurônios motores'], explicacao: 'Os cones percebem cores; os bastonetes funcionam melhor com pouca luz.' },
+    { orgao: 'orelhas', pergunta: 'Qual é a sequência correta do som dentro da orelha?', opcoes: ['Canal auditivo, tímpano, ossículos, cóclea', 'Cóclea, tímpano, canal auditivo, ossículos', 'Tímpano, cóclea, canal auditivo, ossículos', 'Ossículos, canal auditivo, cóclea, tímpano'], explicacao: 'O som entra pelo canal, vibra o tímpano e os ossículos, e a cóclea gera o impulso.' },
+    { orgao: 'orelhas', pergunta: 'Uma pessoa com labirintite sente tontura. Isso acontece porque foi afetada:', opcoes: ['A orelha interna, que participa do equilíbrio', 'A orelha externa, que capta os sons', 'A língua, que sente sabores', 'A retina, que forma imagens'], explicacao: 'Os canais semicirculares da orelha interna informam a posição da cabeça.' },
+    { orgao: 'lingua', pergunta: 'Sobre o "mapa da língua", que diz que cada região sente um sabor, é correto afirmar:', opcoes: ['Está errado: todas as regiões sentem todos os sabores', 'Está certo: a ponta só sente doce', 'Está certo: o fundo só sente salgado', 'Só vale para crianças'], explicacao: 'Os botões gustativos de todas as regiões percebem os cinco sabores.' },
+    { orgao: 'olfato', pergunta: 'Os receptores do olfato e do paladar são chamados de quimiorreceptores porque:', opcoes: ['Detectam substâncias químicas', 'Detectam a luz', 'Detectam vibrações do som', 'Detectam a pressão na pele'], explicacao: 'Cheiros e sabores são moléculas que se ligam aos receptores.' },
+    { orgao: 'olhos', pergunta: 'Qual estrutura do olho funciona como uma lente que focaliza a imagem na retina?', opcoes: ['Cristalino', 'Íris', 'Pupila', 'Nervo óptico'], explicacao: 'A íris controla a pupila; o cristalino focaliza; o nervo óptico leva o impulso.' },
+  ],
+  endocrino: [
+    { orgao: 'hipofise', pergunta: 'Qual glândula é chamada de "glândula mestra" por controlar várias outras?', opcoes: ['Hipófise', 'Tireoide', 'Suprarrenal', 'Pâncreas'], explicacao: 'A hipófise, comandada pelo hipotálamo, estimula tireoide, suprarrenais e gônadas.' },
+    { orgao: 'hipofise', pergunta: 'Os hormônios chegam às células-alvo:', opcoes: ['Pelo sangue', 'Pelos nervos', 'Pelo ar', 'Pelo intestino'], explicacao: 'As glândulas endócrinas lançam os hormônios na corrente sanguínea.' },
+    { orgao: 'suprarrenais', pergunta: 'Num susto, o coração dispara e a respiração acelera. O hormônio responsável é:', opcoes: ['Adrenalina', 'Insulina', 'Testosterona', 'Hormônio do crescimento'], explicacao: 'A adrenalina, das suprarrenais, prepara o corpo para reagir ao perigo.' },
+    { orgao: 'tireoide', pergunta: 'O sal de cozinha recebe iodo para prevenir problemas na:', opcoes: ['Tireoide', 'Hipófise', 'Próstata', 'Suprarrenal'], explicacao: 'A tireoide usa iodo para produzir seus hormônios; a falta causa o bócio.' },
+    { orgao: 'pancreas', pergunta: 'Depois do lanche, a glicose no sangue sobe. O hormônio que faz ela baixar é:', opcoes: ['Insulina, produzida pelo pâncreas', 'Adrenalina, produzida pelas suprarrenais', 'Testosterona, produzida pelos testículos', 'Tiroxina, produzida pela hipófise'], explicacao: 'A insulina faz as células absorverem a glicose do sangue.' },
+    { orgao: 'hipofise', pergunta: 'Comparando os sistemas nervoso e endócrino, é correto dizer que:', opcoes: ['O nervoso age mais rápido; o endócrino é mais lento, mas tem efeito mais duradouro', 'O endócrino age mais rápido que o nervoso', 'Os dois usam só impulsos elétricos', 'Os dois usam só hormônios'], explicacao: 'Impulsos nervosos levam milésimos de segundo; hormônios viajam pelo sangue.' },
+    { orgao: 'tireoide', pergunta: 'Os hormônios da tireoide (T3 e T4) regulam principalmente:', opcoes: ['O metabolismo, a velocidade com que as células usam energia', 'A produção de urina', 'A digestão das gorduras', 'A cor dos olhos'], explicacao: 'Com pouco hormônio da tireoide, a pessoa tende a ficar cansada e com frio.' },
+    { orgao: 'hipofise', pergunta: 'As mudanças do corpo na puberdade começam quando:', opcoes: ['A hipófise estimula ovários e testículos a produzir hormônios', 'O estômago passa a digerir mais', 'Os ossos param de crescer', 'A pele fica mais grossa'], explicacao: 'Estrogênio, progesterona e testosterona provocam as características sexuais secundárias.' },
+  ],
+  reprodutor: [
+    { orgao: 'testiculos', pergunta: 'Onde são produzidos os espermatozoides?', opcoes: ['Nos testículos', 'Na próstata', 'Na bexiga', 'Nos ductos deferentes'], explicacao: 'Os ductos levam os espermatozoides; a próstata produz parte do líquido do sêmen.' },
+    { orgao: 'ovarios', pergunta: 'Onde são produzidos os óvulos?', opcoes: ['Nos ovários', 'No útero', 'Nas tubas uterinas', 'Na vagina'], explicacao: 'Os ovários liberam, em geral, um óvulo por ciclo.' },
+    { orgao: 'tubas_uterinas', pergunta: 'Em geral, a fecundação acontece:', opcoes: ['Nas tubas uterinas', 'No útero', 'Nos ovários', 'Na vagina'], explicacao: 'O óvulo encontra o espermatozoide na tuba e o zigoto segue até o útero.' },
+    { orgao: 'utero', pergunta: 'A menstruação é:', opcoes: ['A descamação da parede interna do útero quando não há gravidez', 'A liberação do óvulo pelo ovário', 'A produção de espermatozoides', 'O nome do hormônio da puberdade'], explicacao: 'Sem fecundação, o endométrio descama e sai pela vagina.' },
+    { orgao: 'gametas', pergunta: 'Um gameta humano tem quantos cromossomos?', opcoes: ['23', '46', '92', '12'], explicacao: 'Na fecundação, os 23 de cada gameta formam um zigoto com 46.' },
+    { orgao: 'gametas', pergunta: 'Qual método evita a gravidez e também protege contra ISTs?', opcoes: ['Camisinha', 'Pílula anticoncepcional', 'DIU', 'Tabelinha'], explicacao: 'Só a camisinha forma uma barreira contra os microrganismos.' },
+    { orgao: 'testiculos', pergunta: 'Por que os testículos ficam fora do abdome, no escroto?', opcoes: ['Para ficar numa temperatura um pouco mais baixa, melhor para formar espermatozoides', 'Para ficar mais perto dos rins', 'Para produzir urina', 'Para proteger a bexiga'], explicacao: 'Os espermatozoides se formam melhor um pouco abaixo da temperatura do corpo.' },
+    { orgao: 'ovarios', pergunta: 'Além de produzir gametas, ovários e testículos também fazem parte do sistema:', opcoes: ['Endócrino, pois produzem hormônios sexuais', 'Respiratório', 'Urinário', 'Esquelético'], explicacao: 'Estrogênio, progesterona e testosterona são hormônios.' },
+  ],
 };
 
-function montar(nivel: Nivel, banco: Record<SistemaId, Bruta[]>): Questao[] {
+function montar(nivel: Nivel, banco: Partial<Record<SistemaId, Bruta[]>>): Questao[] {
   return (Object.keys(banco) as SistemaId[]).flatMap((sistema) =>
-    banco[sistema].map((q, i) => ({ ...q, id: `${nivel}-${sistema}-${i + 1}`, nivel, sistema })),
+    (banco[sistema] ?? []).map((q, i) => ({ ...q, id: `${nivel}-${sistema}-${i + 1}`, nivel, sistema })),
   );
 }
 

@@ -5,7 +5,10 @@
 // Comunicação:
 //   WebView -> app: { type: 'ready' } | { type: 'tap', organ, system } | { type: 'tap', organ: null } | { type: 'error', message }
 //   app -> WebView: window.setLayer('pele' | 'musculos' | 'ossos'), window.highlight(system | null), window.resetView(),
-//                   window.focusOrgan(organId) (aproxima a câmera), window.centerOrgan(organId) (só centraliza), window.focusSystem(sistema), window.setBottomInset(0..1) (área coberta pelo cartão)
+//                   window.focusOrgan(organId) (aproxima a câmera), window.centerOrgan(organId) (só centraliza), window.focusSystem(sistema), window.setBottomInset(0..1) (área coberta pelo cartão),
+//                   window.setNivel('iniciais' | 'finais') (esconde o que é só dos Anos Finais), window.setSexo('f' | 'm') (sistema reprodutor feminino ou masculino),
+//                   window.mostrarParte(organId) (troca feminino/masculino se a parte precisar)
+//   WebView -> app também: { type: 'sexo', sexo } quando a cena troca sozinha
 //
 // Atenção: este arquivo é uma String.raw, então o JS interno não pode usar crase nem "${".
 
@@ -106,7 +109,10 @@ const COR = {
   respiratorio: 0x4CC9F0,
   digestorio: 0xFF9F1C,
   figado: 0xC8643C,
-  urinario: 0xFFD23F
+  urinario: 0xFFD23F,
+  sensorial: 0x1B9AAA,
+  endocrino: 0xC2307D,
+  reprodutor: 0x5563C1
 };
 
 // ---------- Camadas ----------
@@ -128,7 +134,10 @@ function place(group, geo, color, pos, info, opts) {
   if (pos) m.position.set(pos[0], pos[1], pos[2]);
   if (opts.scale) m.scale.set(opts.scale[0], opts.scale[1], opts.scale[2]);
   if (opts.rot) m.rotation.set(opts.rot[0], opts.rot[1], opts.rot[2]);
-  m.userData = { organ: info[0], system: info[1], ghost: !!opts.ghost, semFoco: !!opts.semFoco, baseOpacity: m.material.opacity, baseTransparent: m.material.transparent };
+  // extra: outros sistemas a que a peça também pertence (ex.: pâncreas no endócrino)
+  // soFinais: só aparece nos Anos Finais. sexo: 'f' ou 'm' (sistema reprodutor)
+  m.userData = { organ: info[0], system: info[1], ghost: !!opts.ghost, semFoco: !!opts.semFoco, baseOpacity: m.material.opacity, baseTransparent: m.material.transparent,
+    extra: opts.extra || [], soFinais: !!opts.soFinais, sexo: opts.sexo || null };
   group.add(m);
   allMeshes.push(m);
   return m;
@@ -321,7 +330,7 @@ const animated = { heart: null, lungs: [] };
   // Digestório
   place(g, sphere(0.026), 0xF06A86, [0, 1.565, 0.05], ['boca', 'digestorio'], { scale: [1, 0.4, 1.4] });
   place(g, new THREE.TorusGeometry(0.03, 0.006, 8, 24, Math.PI), 0xFFFFFF, [0, 1.578, 0.055], ['boca', 'digestorio'], { rot: [Math.PI / 2, 0, Math.PI] });
-  limb(g, [0.0, 1.09, 0.0], [0.095, 1.105, 0.005], 0.013, 0xF5C46B, ['pancreas', 'digestorio']);
+  limb(g, [0.0, 1.09, 0.0], [0.095, 1.105, 0.005], 0.013, 0xF5C46B, ['pancreas', 'digestorio'], { extra: ['endocrino'] });
   place(g, sphere(0.015), 0x79C97E, [-0.035, 1.125, 0.072], ['vesicula', 'digestorio'], { scale: [0.8, 1.3, 0.8] });
   limb(g, [0, 1.5, 0.005], [0.035, 1.17, 0.01], 0.0075, COR.digestorio, ['esofago', 'digestorio']);
   place(g, sphere(0.05), COR.digestorio, [0.055, 1.135, 0.04], ['estomago', 'digestorio'], { scale: [1.25, 0.85, 0.8], rot: [0, 0, 0.5] });
@@ -339,6 +348,55 @@ const animated = { heart: null, lungs: [] };
   limb(g, [0, 0.875, 0.045], [0, 0.835, 0.05], 0.0045, 0xE6B800, ['uretra', 'urinario']);
 })();
 
+// ========== SENTIDOS, ENDÓCRINO E REPRODUTOR (camada dos órgãos) ==========
+(function () {
+  const g = layers.ossos;
+  // Olhos: globo branco, íris e nervo óptico até o encéfalo
+  both(function (s) {
+    place(g, sphere(0.019), 0xFFFFFF, [0.04 * s, 1.63, 0.094], ['olhos', 'sensorial']);
+    place(g, new THREE.CylinderGeometry(0.009, 0.009, 0.004, 20), 0x2E86AB, [0.04 * s, 1.63, 0.112], ['olhos', 'sensorial'], { rot: [Math.PI / 2, 0, 0] });
+    place(g, new THREE.CylinderGeometry(0.0045, 0.0045, 0.005, 16), 0x1A1A2E, [0.04 * s, 1.63, 0.1135], ['olhos', 'sensorial'], { rot: [Math.PI / 2, 0, 0] });
+    limb(g, [0.04 * s, 1.63, 0.076], [0.014 * s, 1.618, 0.03], 0.003, COR.sensorial, ['olhos', 'sensorial']);
+  });
+  // Orelhas: pavilhão, canal auditivo e cóclea
+  both(function (s) {
+    place(g, sphere(0.024), 0xF2B8A0, [0.116 * s, 1.62, -0.005], ['orelhas', 'sensorial'], { scale: [0.35, 1, 0.75] });
+    limb(g, [0.112 * s, 1.618, 0.0], [0.09 * s, 1.615, 0.0], 0.0045, 0xF2B8A0, ['orelhas', 'sensorial']);
+    place(g, new THREE.TorusKnotGeometry(0.0075, 0.0028, 48, 6, 2, 3), COR.sensorial, [0.083 * s, 1.613, 0.0], ['orelhas', 'sensorial']);
+  });
+  // Olfato: epitélio no teto da cavidade nasal
+  place(g, sphere(0.011), 0xFFD166, [0, 1.624, 0.078], ['olfato', 'sensorial'], { scale: [1.5, 0.45, 1.3] });
+  // Língua: dentro da boca, com a ponta para a frente
+  place(g, sphere(0.018), 0xFF6F91, [0, 1.567, 0.074], ['lingua', 'sensorial'], { scale: [0.95, 0.4, 1.6] });
+
+  // Endócrino (Anos Finais)
+  const E = COR.endocrino, fin = { soFinais: true };
+  place(g, sphere(0.0095), E, [0, 1.594, 0.006], ['hipofise', 'endocrino'], fin);
+  both(function (s) {
+    place(g, sphere(0.011), E, [0.015 * s, 1.488, 0.044], ['tireoide', 'endocrino'], { soFinais: true, scale: [0.8, 1.45, 0.6] });
+    place(g, sphere(0.013), 0xE0559A, [0.07 * s, 1.124, -0.048], ['suprarrenais', 'endocrino'], { soFinais: true, scale: [1.2, 0.65, 0.8] });
+  });
+  limb(g, [-0.012, 1.482, 0.046], [0.012, 1.482, 0.046], 0.0045, E, ['tireoide', 'endocrino'], fin);
+
+  // Reprodutor feminino (Anos Finais)
+  const R = COR.reprodutor, F = { soFinais: true, sexo: 'f' };
+  place(g, sphere(0.026), R, [0, 0.932, -0.012], ['utero', 'reprodutor'], { soFinais: true, sexo: 'f', scale: [1, 1.2, 0.8], rot: [-0.35, 0, 0] });
+  limb(g, [0, 0.905, -0.008], [0, 0.85, 0.012], 0.008, 0x7C88D6, ['vagina', 'reprodutor'], F);
+  both(function (s) {
+    tube(g, [[0.02 * s, 0.952, -0.012], [0.045 * s, 0.965, -0.012], [0.068 * s, 0.958, -0.01], [0.072 * s, 0.945, -0.004]], 0.0035, 0x8E99E0, ['tubas_uterinas', 'reprodutor'], F);
+    place(g, sphere(0.0105), 0xE58FB7, [0.064 * s, 0.94, -0.016], ['ovarios', 'reprodutor'], { soFinais: true, sexo: 'f', extra: ['endocrino'], scale: [1.3, 0.9, 0.9] });
+  });
+
+  // Reprodutor masculino (Anos Finais)
+  const M = { soFinais: true, sexo: 'm' };
+  place(g, sphere(0.013), 0x8E99E0, [0, 0.862, 0.037], ['prostata', 'reprodutor'], M);
+  limb(g, [0, 0.845, 0.058], [0, 0.785, 0.086], 0.011, R, ['penis', 'reprodutor'], M);
+  both(function (s) {
+    place(g, sphere(0.016), 0xE58FB7, [0.022 * s, 0.808, 0.055], ['testiculos', 'reprodutor'], { soFinais: true, sexo: 'm', extra: ['endocrino'], scale: [0.8, 1.1, 0.9] });
+    tube(g, [[0.022 * s, 0.825, 0.055], [0.04 * s, 0.875, 0.062], [0.046 * s, 0.918, 0.03], [0.03 * s, 0.905, -0.002], [0.006 * s, 0.868, 0.03]], 0.0028, 0x7C88D6, ['ductos_deferentes', 'reprodutor'], M);
+  });
+})();
+
 // ========== BOLHAS DE AUMENTO (partes microscópicas) ==========
 // Cada bolha aparece ao lado de um órgão quando a tag é tocada.
 const detalhes = new THREE.Group();
@@ -346,9 +404,9 @@ detalhes.visible = false;
 scene.add(detalhes);
 const bolhas = {}; // id da parte -> { grupo, ancora }
 
-function tube(group, pts, r, color, info) {
+function tube(group, pts, r, color, info, opts) {
   const curve = new THREE.CatmullRomCurve3(pts.map(function (p) { return new THREE.Vector3(p[0], p[1], p[2]); }));
-  return place(group, new THREE.TubeGeometry(curve, 48, r, 8, false), color, null, info);
+  return place(group, new THREE.TubeGeometry(curve, 48, r, 8, false), color, null, info, opts);
 }
 
 function novaBolha(ids, ancora, raio) {
@@ -453,6 +511,20 @@ function novaBolha(ids, ancora, raio) {
   limb(g, [0.035, -0.02, 0.02], [0.04, 0.044, 0.02], 0.0025, 0x4CC9F0, ['glandulas_suor', 'tegumentar']);
 })();
 
+// Gametas: óvulo grande e espermatozoides com flagelo
+(function () {
+  const g = novaBolha(['gametas'], [0, 0.94, 0.0]);
+  const i = ['gametas', 'reprodutor'];
+  place(g, sphere(0.04), 0xFFD9E8, [-0.015, 0, 0], i);
+  place(g, sphere(0.044), 0xFFFFFF, [-0.015, 0, 0], i, { mat: { transparent: true, opacity: 0.35, depthWrite: false } });
+  place(g, sphere(0.012), 0xC2307D, [-0.02, 0.008, 0.03], i);
+  [[0.075, 0.05, 0.01, 2.6], [0.085, -0.02, -0.01, 3.2], [0.06, -0.06, 0.02, 3.8]].forEach(function (p) {
+    place(g, sphere(0.0065), 0x5563C1, [p[0], p[1], p[2]], i, { scale: [1.5, 1, 1] });
+    const dx = Math.cos(p[3]) * -0.01, dy = Math.sin(p[3]) * -0.01;
+    tube(g, [[p[0] + 0.008, p[1], p[2]], [p[0] + 0.025, p[1] + 0.008, p[2]], [p[0] + 0.04, p[1] - 0.004, p[2]], [p[0] + 0.055, p[1] + 0.006 + dx + dy, p[2]]], 0.0016, 0x8E99E0, i);
+  });
+})();
+
 // Linha que liga a bolha ao órgão
 const conector = new THREE.Mesh(
   new THREE.CylinderGeometry(0.0022, 0.0022, 1, 8),
@@ -493,6 +565,29 @@ let currentLayer = 'pele';
 let currentHighlight = null;
 let focusedOrgan = null; // parte aproximada pelas tags do cartão
 
+let nivelAtual = 'iniciais';
+let sexoAtual = 'f';
+
+// Peças só dos Anos Finais e a variante feminina/masculina do sistema reprodutor
+function atualizarVisiveis() {
+  allMeshes.forEach(function (m) {
+    const u = m.userData;
+    if (!u.soFinais && !u.sexo) return;
+    m.visible = (!u.soFinais || nivelAtual === 'finais') && (!u.sexo || u.sexo === sexoAtual);
+  });
+}
+function setNivel(n) { nivelAtual = n === 'finais' ? 'finais' : 'iniciais'; atualizarVisiveis(); }
+function setSexo(sx) { sexoAtual = sx === 'm' ? 'm' : 'f'; atualizarVisiveis(); }
+// Se a parte só existe na outra variante (ex.: útero com o masculino na tela), troca e avisa o app
+function mostrarParte(id) {
+  const alvo = allMeshes.find(function (m) { return m.userData.organ === id && m.userData.sexo; });
+  if (alvo && alvo.userData.sexo !== sexoAtual) {
+    setSexo(alvo.userData.sexo);
+    send({ type: 'sexo', sexo: sexoAtual });
+  }
+}
+function doSistema(u, sys) { return u.system === sys || u.extra.indexOf(sys) >= 0; }
+
 function setLayer(name) {
   if (!layers[name]) return;
   currentLayer = name;
@@ -505,8 +600,8 @@ function applyHighlight() {
     const mat = m.material, u = m.userData;
     const focado = focusedOrgan && u.organ === focusedOrgan;
     // Com uma parte em foco, o resto do sistema fica meio apagado e o resto do corpo quase some
-    const on = focusedOrgan ? focado : !currentHighlight || u.system === currentHighlight;
-    const meio = focusedOrgan && !focado && u.system === currentHighlight;
+    const on = focusedOrgan ? focado : !currentHighlight || doSistema(u, currentHighlight);
+    const meio = focusedOrgan && !focado && doSistema(u, currentHighlight);
     if (on) {
       mat.transparent = u.baseTransparent;
       mat.opacity = u.baseOpacity;
@@ -542,6 +637,7 @@ function animateCamera(toTarget, toPos) {
 }
 
 function focusOrgan(id) {
+  mostrarParte(id);
   const box = new THREE.Box3();
   let found = false;
   if (bolhas[id]) {
@@ -580,7 +676,7 @@ function focusSystem(sys) {
   const box = new THREE.Box3();
   let found = false;
   allMeshes.forEach(function (m) {
-    if (m.userData.system === sys && !m.userData.semFoco && !m.userData.ghost && isShown(m)) { box.expandByObject(m); found = true; }
+    if (doSistema(m.userData, sys) && !m.userData.semFoco && !m.userData.ghost && isShown(m)) { box.expandByObject(m); found = true; }
   });
   if (!found) return;
   const center = box.getCenter(new THREE.Vector3());
@@ -628,6 +724,9 @@ window.focusOrgan = focusOrgan;
 window.centerOrgan = centerOrgan;
 window.focusSystem = focusSystem;
 window.setBottomInset = setBottomInset;
+window.setNivel = setNivel;
+window.setSexo = setSexo;
+window.mostrarParte = mostrarParte;
 
 // ---------- Toque: distinguir "tocar" de "arrastar" ----------
 const raycaster = new THREE.Raycaster();
@@ -708,6 +807,7 @@ window.addEventListener('resize', function () {
   renderer.setSize(window.innerWidth, window.innerHeight);
 });
 
+setNivel('iniciais');
 setLayer('pele');
 document.getElementById('msg').remove();
 window.__ready = true;

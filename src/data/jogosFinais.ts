@@ -117,6 +117,30 @@ export const SITUACOES: Situacao[] = [
     dupla: ['respiratorio', 'nervoso'],
     explicacao: 'O cheiro entra pelo nariz junto com o ar. Os nervos do olfato levam a informação até o cérebro.',
   },
+  {
+    emoji: '📖',
+    texto: 'Ler as palavras de um livro',
+    dupla: ['sensorial', 'nervoso'],
+    explicacao: 'Os olhos captam a luz refletida pela página e o cérebro transforma isso em imagens e palavras.',
+  },
+  {
+    emoji: '🍰',
+    texto: 'Baixar o açúcar do sangue depois do lanche',
+    dupla: ['endocrino', 'circulatorio'],
+    explicacao: 'O pâncreas libera insulina no sangue, e o sangue leva o hormônio até as células, que absorvem a glicose.',
+  },
+  {
+    emoji: '😱',
+    texto: 'Levar um susto e o corpo ficar em alerta',
+    dupla: ['nervoso', 'endocrino'],
+    explicacao: 'O cérebro percebe o perigo e as suprarrenais liberam adrenalina, que acelera o coração e a respiração.',
+  },
+  {
+    emoji: '🧒',
+    texto: 'As mudanças do corpo na puberdade',
+    dupla: ['endocrino', 'reprodutor'],
+    explicacao: 'A hipófise estimula ovários e testículos, que amadurecem e produzem os hormônios sexuais.',
+  },
 ];
 
 // ---------- Prato equilibrado ----------

@@ -37,8 +37,8 @@ export default function CacaAoOrgao() {
   // Prepara o boneco para cada rodada: camada certa e câmera de frente
   useEffect(() => {
     if (!pronto || !alvo) return;
-    scene.current?.run(`setLayer('${alvo.camada}'); highlight(null); resetView();`);
-  }, [pronto, alvo]);
+    scene.current?.run(`setNivel('${nivel}'); mostrarParte('${alvo.orgao}'); setLayer('${alvo.camada}'); highlight(null); resetView();`);
+  }, [pronto, alvo, nivel]);
 
   // Depois de acertar, espera um pouco e vai para a próxima
   useEffect(() => {
@@ -56,7 +56,7 @@ export default function CacaAoOrgao() {
       if (msg.type === 'ready') {
         setPronto(true);
         setInicio(Date.now());
-        if (alvo) scene.current?.run(`setLayer('${alvo.camada}'); highlight(null); resetView();`);
+        if (alvo) scene.current?.run(`setNivel('${nivel}'); mostrarParte('${alvo.orgao}'); setLayer('${alvo.camada}'); highlight(null); resetView();`);
       }
       if (msg.type !== 'tap' || !msg.organ || !alvo || acertou) return;
       if (msg.organ === alvo.orgao) {
@@ -79,7 +79,7 @@ export default function CacaAoOrgao() {
         }
       }
     },
-    [alvo, acertou, errosNaRodada],
+    [alvo, acertou, errosNaRodada, nivel],
   );
 
   const recomeçar = () => {
