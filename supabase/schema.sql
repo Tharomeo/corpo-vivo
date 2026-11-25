@@ -47,6 +47,7 @@ as $$
   );
 $$;
 revoke all on function public.apelido_disponivel(text) from public;
+revoke execute on function public.apelido_disponivel(text) from anon;
 grant execute on function public.apelido_disponivel(text) to authenticated;
 
 -- ================= Partidas =================
@@ -154,3 +155,6 @@ $$;
 drop trigger if exists anotacoes_antes on public.anotacoes;
 create trigger anotacoes_antes before insert or update on public.anotacoes
 for each row execute function public.anotacoes_antes();
+
+-- Função interna do gatilho: não precisa ser chamável pela API
+revoke execute on function public.anotacoes_antes() from public, anon, authenticated;
