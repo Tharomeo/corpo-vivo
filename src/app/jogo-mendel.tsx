@@ -7,6 +7,7 @@ import { escreverGenotipo, fenotipo, gametas, punnett, TRACOS, type Genotipo, ty
 import { pontosParciais } from '../lib/pontos';
 import { cores, sombra } from '../theme';
 import { embaralhar } from '../utils/embaralhar';
+import { comAcesso } from '../components/ExigeAcesso';
 
 // Ervilhas de Mendel (9º ano): dominante e recessivo, quadro de Punnett e proporções.
 // As rodadas vão do mais fácil ao mais difícil: fenótipo → quadro → proporção, duas vezes.
@@ -80,7 +81,7 @@ function explicacao(p: Pergunta) {
 
 const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 
-export default function Mendel() {
+function Mendel() {
   const [partida, setPartida] = useState(0);
   const [perguntas, setPerguntas] = useState<Pergunta[]>(gerarPartida);
   const [i, setI] = useState(0);
@@ -438,3 +439,5 @@ const styles = StyleSheet.create({
   apertado: { transform: [{ scale: 0.97 }] },
   balaoArea: { minHeight: 80, justifyContent: 'center', paddingVertical: 12 },
 });
+
+export default comAcesso(Mendel, 'finais');

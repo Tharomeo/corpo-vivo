@@ -9,13 +9,14 @@ import { pontosParciais } from '../lib/pontos';
 import { sortearAlvos, type Alvo3D } from '../lib/sorteioCaca';
 import { ORGAOS, SISTEMAS, type Nivel } from '../data/sistemas';
 import { cores, sombra } from '../theme';
+import { comAcesso } from '../components/ExigeAcesso';
 
 // Caça ao órgão: o app pede uma parte e a pessoa toca nela no boneco 3D.
 
 const RODADAS = 8;
 const COR = '#7B5CFA';
 
-export default function CacaAoOrgao() {
+function CacaAoOrgao() {
   const params = useLocalSearchParams<{ nivel?: string }>();
   const nivel: Nivel = params.nivel === 'finais' ? 'finais' : 'iniciais';
   const insets = useSafeAreaInsets();
@@ -155,3 +156,5 @@ const styles = StyleSheet.create({
   rodape: { position: 'absolute', left: 16, right: 16, bottom: 0, alignItems: 'center' },
   dica: { fontSize: 14, fontWeight: '800', color: cores.textoSuave, backgroundColor: 'rgba(255,255,255,0.85)', borderRadius: 999, paddingVertical: 8, paddingHorizontal: 14 },
 });
+
+export default comAcesso(CacaAoOrgao);

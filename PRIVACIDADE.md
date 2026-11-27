@@ -1,6 +1,6 @@
 # Política de privacidade do Corpo Vivo
 
-Versão de 25/11/2026. Este é o mesmo texto que aparece no app, na tela Privacidade.
+Versão de 27/11/2026. Este é o mesmo texto que aparece no app, na tela Privacidade.
 
 ## Quem cuida dos seus dados
 
@@ -14,10 +14,11 @@ O Corpo Vivo é um app de estudo do corpo humano criado por Thais Romeo, respons
 - Partidas dos jogos: jogo, pontos, acertos, erros e tempo.
 - Anotações que você escreve no caderno.
 - Data em que a política de privacidade foi aceita.
+- Se houver assinatura: o plano, até quando o acesso vale e o histórico de pagamentos (valor e data). Os dados do cartão e do Pix ficam só com a Stripe; o Corpo Vivo nunca os recebe.
 
 ## Para que usamos
 
-Só para o app funcionar: entrar na conta, guardar seu caderno e seus pontos e montar o ranking dos jogos.
+Só para o app funcionar: entrar na conta, guardar seu caderno e seus pontos, montar o ranking dos jogos e liberar o conteúdo das assinaturas.
 
 Não vendemos dados, não mostramos anúncios e não usamos os dados para fazer perfil de comportamento.
 
@@ -33,11 +34,11 @@ O responsável escolhe se o apelido aparece no ranking mundial. Para menores de 
 
 No ranking aparecem só o apelido e os pontos de quem escolheu aparecer. Ninguém vê seu e-mail, sua idade ou suas anotações.
 
-Os dados ficam guardados no Supabase, serviço de banco de dados e login, e os e-mails com o código são enviados pela Brevo. Esses serviços processam os dados só para isso e podem armazená-los em servidores fora do Brasil, com medidas de proteção.
+Os dados ficam guardados no Supabase, serviço de banco de dados e login, e os e-mails com o código são enviados pela Brevo. Os pagamentos são processados pela Stripe, que recebe o e-mail da conta para emitir os recibos. Esses serviços processam os dados só para isso e podem armazená-los em servidores fora do Brasil, com medidas de proteção.
 
 ## Por quanto tempo
 
-Enquanto a conta existir. Ao apagar a conta, o perfil, as partidas e as anotações são apagados na hora.
+Enquanto a conta existir. Ao apagar a conta, o perfil, as partidas, as anotações e o histórico de pagamentos no app são apagados na hora. A Stripe guarda os registros dos pagamentos pelo tempo que a lei exige.
 
 ## Seus direitos
 
@@ -53,4 +54,4 @@ O código do app é aberto e pode ser conferido no GitHub.
 
 ## Mudanças nesta política
 
-Se esta política mudar, o app avisa e pede o aceite de novo. Versão de 25/11/2026.
+Se esta política mudar, o app avisa e pede o aceite de novo. Versão de 27/11/2026.

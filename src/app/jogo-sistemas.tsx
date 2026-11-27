@@ -7,6 +7,7 @@ import { SISTEMAS, type SistemaId } from '../data/sistemas';
 import { pontosParciais } from '../lib/pontos';
 import { cores, sombra } from '../theme';
 import { embaralhar } from '../utils/embaralhar';
+import { comAcesso } from '../components/ExigeAcesso';
 
 // Sistemas em equipe: cada situação é feita por uma dupla de sistemas. Escolha os dois.
 
@@ -21,7 +22,7 @@ const nomeCurto = (s: SistemaId) => {
   return n.charAt(0).toUpperCase() + n.slice(1);
 };
 
-export default function SistemasEmEquipe() {
+function SistemasEmEquipe() {
   const [partida, setPartida] = useState(0);
   const [situacoes, setSituacoes] = useState<Situacao[]>(() => embaralhar(SITUACOES).slice(0, RODADAS));
   const [i, setI] = useState(0);
@@ -193,3 +194,5 @@ const styles = StyleSheet.create({
   botaoTexto: { color: cores.branco, fontSize: 17, fontWeight: '900' },
   apertado: { transform: [{ scale: 0.97 }] },
 });
+
+export default comAcesso(SistemasEmEquipe, 'finais');

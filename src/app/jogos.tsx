@@ -6,8 +6,9 @@ import { JOGOS } from '../data/jogos';
 import type { Nivel } from '../data/sistemas';
 import { useConta } from '../lib/conta';
 import { cores, sombra } from '../theme';
+import { comAcesso } from '../components/ExigeAcesso';
 
-export default function Jogos() {
+function Jogos() {
   const params = useLocalSearchParams<{ nivel?: string }>();
   const nivel: Nivel = params.nivel === 'finais' ? 'finais' : 'iniciais';
   const { perfil } = useConta();
@@ -81,3 +82,5 @@ const styles = StyleSheet.create({
   play: { width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center' },
   playTexto: { color: cores.branco, fontSize: 16, fontWeight: '900', marginLeft: 2 },
 });
+
+export default comAcesso(Jogos);

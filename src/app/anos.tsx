@@ -2,7 +2,8 @@ import { router } from 'expo-router';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import type { Nivel } from '../data/sistemas';
-import { useConta } from '../lib/conta';
+import { PRODUTOS, reais } from '../lib/assinatura';
+import { temAcesso, useConta } from '../lib/conta';
 import { cores, sombra } from '../theme';
 
 type Etapa = {
@@ -58,11 +59,16 @@ export default function EscolhaDaEtapa() {
       <Text style={styles.titulo}>O que você quer estudar?</Text>
 
       <ScrollView contentContainerStyle={styles.lista} showsVerticalScrollIndicator={false}>
-        {ETAPAS.map((e) => (
+        {ETAPAS.map((e) => {
+          // Anos Finais: pago. Sem acesso, o cartão leva para a assinatura.
+          const aPagar = e.id === 'finais' && !temAcesso(perfil, 'finais');
+          return (
           <Pressable
             key={e.id}
             disabled={e.bloqueada}
-            onPress={() => router.push({ pathname: '/corpo', params: { nivel: e.id } })}
+            onPress={() =>
+              aPagar ? router.push({ pathname: '/assinar', params: { produto: 'finais' } }) : router.push({ pathname: '/corpo', params: { nivel: e.id } })
+            }
             style={({ pressed }) => [
               styles.card,
               { backgroundColor: e.bloqueada ? e.corClara : cores.branco },
@@ -76,6 +82,7 @@ export default function EscolhaDaEtapa() {
             <View style={{ flex: 1 }}>
               <Text style={[styles.anos, { color: e.cor }]}>{e.anos}</Text>
               <Text style={styles.cardTitulo}>{e.titulo}</Text>
+              {aPagar && <Text style={[styles.preco, { color: e.cor }]}>🔒 {reais(PRODUTOS.finais.mensal)} por mês</Text>}
             </View>
             {e.bloqueada ? (
               <Text style={styles.cadeado}>🔒</Text>
@@ -85,7 +92,8 @@ export default function EscolhaDaEtapa() {
               </View>
             )}
           </Pressable>
-        ))}
+          );
+        })}
       </ScrollView>
     </SafeAreaView>
   );
@@ -106,6 +114,7 @@ const styles = StyleSheet.create({
   anos: { fontSize: 12, fontWeight: '800', textTransform: 'uppercase', letterSpacing: 0.6 },
   cardTitulo: { fontSize: 20, fontWeight: '900', color: cores.texto, marginTop: 1 },
   cadeado: { fontSize: 22 },
+  preco: { fontSize: 13, fontWeight: '900', marginTop: 3 },
   seta: { width: 36, height: 36, borderRadius: 18, alignItems: 'center', justifyContent: 'center' },
   setaTexto: { color: cores.branco, fontSize: 26, fontWeight: '800', lineHeight: 28, marginTop: -2 },
 });

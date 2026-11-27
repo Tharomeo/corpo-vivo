@@ -8,10 +8,11 @@ import { CELULAS, ORGANELAS, type OrganelaId } from '../data/celula';
 import { SISTEMAS, type SistemaId } from '../data/sistemas';
 import { CELL_HTML } from '../three/cellScene';
 import { cores, sombra } from '../theme';
+import { comAcesso } from '../components/ExigeAcesso';
 
 // Zoom na célula: a célula típica de um sistema, com as organelas para tocar.
 
-export default function Celula() {
+function Celula() {
   const params = useLocalSearchParams<{ sistema?: string }>();
   const sistema: SistemaId = params.sistema && params.sistema in SISTEMAS ? (params.sistema as SistemaId) : 'nervoso';
   const s = SISTEMAS[sistema];
@@ -137,3 +138,5 @@ const styles = StyleSheet.create({
   voltarCelula: { paddingVertical: 6 },
   voltarCelulaTexto: { fontSize: 14, fontWeight: '900' },
 });
+
+export default comAcesso(Celula, 'finais');

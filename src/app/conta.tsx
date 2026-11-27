@@ -1,15 +1,16 @@
-import { router } from 'expo-router';
-import { useState } from 'react';
+import { router, useFocusEffect } from 'expo-router';
+import { useCallback, useState } from 'react';
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { TopoJogo } from '../components/jogos/Moldura';
+import { gerenciarAssinatura, PRODUTOS, reais } from '../lib/assinatura';
 import { useConta } from '../lib/conta';
 import { cores, sombra } from '../theme';
 
 // Minha conta: apelido, e-mail, plano, privacidade (ranking e apagar conta) e sair
 
 export default function MinhaConta() {
-  const { usuario, perfil, modoTeste, sair, salvarRanking, apagarConta } = useConta();
+  const { usuario, perfil, modoTeste, sair, salvarRanking, apagarConta, recarregarPerfil } = useConta();
   const [confirmar, setConfirmar] = useState<null | 'ranking' | 'apagar'>(null);
   const [ocupado, setOcupado] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
@@ -40,7 +41,25 @@ export default function MinhaConta() {
     router.replace('/entrar');
   };
   const inicial = (perfil?.apelido ?? '?').charAt(0).toUpperCase();
-  const premium = perfil?.plano === 'premium';
+  const finaisAte = perfil?.acessoFinaisAte && new Date(perfil.acessoFinaisAte) > new Date() ? perfil.acessoFinaisAte : null;
+  const medioAte = perfil?.acessoMedioAte && new Date(perfil.acessoMedioAte) > new Date() ? perfil.acessoMedioAte : null;
+  const pago = !!(finaisAte || medioAte);
+  const dataBR = (iso: string) => new Date(iso).toLocaleDateString('pt-BR');
+
+  // Volta do portal da Stripe: atualiza as datas
+  useFocusEffect(
+    useCallback(() => {
+      recarregarPerfil();
+    }, [recarregarPerfil]),
+  );
+
+  const gerenciar = async () => {
+    setErro(null);
+    setOcupado(true);
+    const e = await gerenciarAssinatura();
+    setOcupado(false);
+    if (e) setErro(e);
+  };
 
   return (
     <SafeAreaView style={styles.tela} edges={['top']}>
@@ -61,20 +80,33 @@ export default function MinhaConta() {
         </View>
 
         <Text style={styles.secao}>Seu plano</Text>
-        <View style={[styles.plano, { backgroundColor: premium ? '#FFF4D1' : '#DDF6F3' }]}>
-          <Text style={styles.planoNome}>{premium ? '⭐ Premium' : '🌱 Gratuito'}</Text>
+        <View style={[styles.plano, { backgroundColor: pago ? '#FFF4D1' : '#DDF6F3' }]}>
+          <Text style={styles.planoNome}>{pago ? '⭐ Assinante' : '🌱 Gratuito'}</Text>
           <Text style={styles.planoTexto}>
-            {premium ? 'Tudo liberado: Ensino Fundamental e Ensino Médio.' : 'Ensino Fundamental completo: corpo 3D, Me testar e jogos.'}
+            {medioAte
+              ? `Ensino Médio e Anos Finais liberados até ${dataBR(medioAte)}.`
+              : finaisAte
+                ? `Anos Finais liberados até ${dataBR(finaisAte)}.`
+                : 'Anos Iniciais completos e grátis: corpo 3D, Me testar, jogos e caderno.'}
           </Text>
+          {pago && !modoTeste && (
+            <Pressable onPress={gerenciar} disabled={ocupado} style={styles.gerenciar}>
+              <Text style={styles.gerenciarTexto}>Gerenciar assinatura, faturas e cancelamento ›</Text>
+            </Pressable>
+          )}
         </View>
 
-        {!premium && (
+        {!finaisAte && !medioAte && (
           <View style={styles.assinar}>
-            <Text style={styles.assinarTitulo}>⭐ Premium</Text>
-            <Text style={styles.assinarTexto}>Libera o Ensino Médio.</Text>
-            <View style={[styles.botao, styles.desligado]}>
-              <Text style={styles.botaoTexto}>💳 Assinar com cartão · em breve</Text>
-            </View>
+            <Text style={styles.assinarTitulo}>
+              {PRODUTOS.finais.emoji} {PRODUTOS.finais.nome}
+            </Text>
+            <Text style={styles.assinarTexto}>
+              {reais(PRODUTOS.finais.mensal)} por mês ou {reais(PRODUTOS.finais.anual)} por ano. Ensino Médio em breve.
+            </Text>
+            <Pressable onPress={() => router.push({ pathname: '/assinar', params: { produto: 'finais' } })} style={({ pressed }) => [styles.botao, pressed && { opacity: 0.85 }]}>
+              <Text style={styles.botaoTexto}>Ver planos</Text>
+            </Pressable>
           </View>
         )}
 
@@ -149,6 +181,8 @@ const styles = StyleSheet.create({
   trocarTexto: { fontSize: 14, fontWeight: '900', color: cores.roxo },
   secao: { fontSize: 17, fontWeight: '900', color: cores.texto, marginTop: 24, marginBottom: 10 },
   plano: { borderRadius: 22, padding: 16 },
+  gerenciar: { marginTop: 10, paddingVertical: 6 },
+  gerenciarTexto: { fontSize: 14, fontWeight: '900', color: cores.roxo },
   planoNome: { fontSize: 19, fontWeight: '900', color: cores.texto },
   planoTexto: { fontSize: 14.5, color: cores.textoSuave, marginTop: 4, lineHeight: 20 },
   assinar: { marginTop: 12, borderRadius: 22, padding: 16, borderWidth: 2, borderColor: '#FFC93C', backgroundColor: cores.branco },

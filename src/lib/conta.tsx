@@ -2,6 +2,7 @@
 // Sem servidor configurado, funciona em "modo de teste": tudo fica salvo no celular.
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
+import type { Nivel } from '../data/sistemas';
 import { POLITICA_VERSAO, type FaixaEtaria } from './privacidade';
 import { servidorConfigurado, supabase } from './supabase';
 
@@ -13,6 +14,8 @@ export type Perfil = {
   consentimentoResponsavel: boolean;
   mostrarNoRanking: boolean;
   politicaVersao: string | null;
+  acessoFinaisAte: string | null; // até quando os Anos Finais estão pagos
+  acessoMedioAte: string | null; // até quando o Ensino Médio está pago (inclui os Anos Finais)
 };
 
 // Escolhas da tela de idade e privacidade, guardadas até o apelido ser criado
@@ -32,10 +35,12 @@ type Conta = {
   salvarCadastro: (c: Cadastro) => Promise<string | null>;
   salvarRanking: (mostrar: boolean, consentimentoResponsavel?: boolean) => Promise<string | null>;
   apagarConta: () => Promise<string | null>;
+  recarregarPerfil: () => Promise<void>;
+  simularPagamento: (produto: 'finais' | 'medio', dias: number) => Promise<void>;
   sair: () => Promise<void>;
 };
 
-const COLUNAS_PERFIL = 'apelido, plano, faixa_etaria, consentimento_responsavel, mostrar_no_ranking, politica_versao';
+const COLUNAS_PERFIL = 'apelido, plano, faixa_etaria, consentimento_responsavel, mostrar_no_ranking, politica_versao, acesso_finais_ate, acesso_medio_ate';
 
 type LinhaPerfil = {
   apelido: string;
@@ -44,6 +49,8 @@ type LinhaPerfil = {
   consentimento_responsavel: boolean;
   mostrar_no_ranking: boolean;
   politica_versao: string | null;
+  acesso_finais_ate: string | null;
+  acesso_medio_ate: string | null;
 };
 
 function lerPerfil(d: LinhaPerfil): Perfil {
@@ -54,7 +61,19 @@ function lerPerfil(d: LinhaPerfil): Perfil {
     consentimentoResponsavel: d.consentimento_responsavel,
     mostrarNoRanking: d.mostrar_no_ranking,
     politicaVersao: d.politica_versao,
+    acessoFinaisAte: d.acesso_finais_ate,
+    acessoMedioAte: d.acesso_medio_ate,
   };
+}
+
+const vale = (ate: string | null | undefined) => !!ate && new Date(ate).getTime() > Date.now();
+
+// A etapa está liberada? Anos Iniciais são grátis; o Ensino Médio inclui os Anos Finais.
+export function temAcesso(p: Perfil | null, etapa: Nivel | 'medio') {
+  if (etapa === 'iniciais') return true;
+  if (!p) return false;
+  if (etapa === 'finais') return vale(p.acessoFinaisAte) || vale(p.acessoMedioAte);
+  return vale(p.acessoMedioAte);
 }
 
 // Perfil antigo, sem idade, ou com política desatualizada: pede de novo
@@ -186,6 +205,8 @@ export function ContaProvider({ children }: { children: ReactNode }) {
             consentimentoResponsavel: cadastro!.consentimentoResponsavel,
             mostrarNoRanking: cadastro!.mostrarNoRanking,
             politicaVersao: POLITICA_VERSAO,
+            acessoFinaisAte: null,
+            acessoMedioAte: null,
           };
       if (!supabase) {
         await gravarTeste(novo);
@@ -257,6 +278,21 @@ export function ContaProvider({ children }: { children: ReactNode }) {
     [usuario, perfil, gravarTeste],
   );
 
+  // Depois de pagar: busca de novo as datas de acesso
+  const recarregarPerfil = useCallback(async () => {
+    if (supabase && usuario) await carregarPerfil(usuario.id);
+  }, [usuario, carregarPerfil]);
+
+  // Modo de teste (sem servidor): finge um pagamento, só neste celular
+  const simularPagamento = useCallback(
+    async (produto: 'finais' | 'medio', dias: number) => {
+      if (supabase || !perfil) return;
+      const ate = new Date(Date.now() + dias * 86400000).toISOString();
+      await gravarTeste(produto === 'finais' ? { ...perfil, acessoFinaisAte: ate } : { ...perfil, acessoMedioAte: ate });
+    },
+    [perfil, gravarTeste],
+  );
+
   // Apaga a conta e tudo o que é dela (perfil, partidas e anotações)
   const apagarConta = useCallback(async () => {
     if (!supabase) {
@@ -299,9 +335,11 @@ export function ContaProvider({ children }: { children: ReactNode }) {
       salvarCadastro,
       salvarRanking,
       apagarConta,
+      recarregarPerfil,
+      simularPagamento,
       sair,
     }),
-    [carregando, usuario, perfil, enviarCodigo, confirmarCodigo, apelidoDisponivel, salvarApelido, cadastro, salvarCadastro, salvarRanking, apagarConta, sair],
+    [carregando, usuario, perfil, enviarCodigo, confirmarCodigo, apelidoDisponivel, salvarApelido, cadastro, salvarCadastro, salvarRanking, apagarConta, recarregarPerfil, simularPagamento, sair],
   );
 
   return <ContaContexto.Provider value={valor}>{children}</ContaContexto.Provider>;

@@ -1,0 +1,4 @@
+# Configuração das Edge Functions (usada pela CLI da Supabase).
+# O webhook da Stripe não manda token de login: quem prova a origem é a assinatura stripe-signature.
+[functions.stripe-webhook]
+verify_jwt = false

@@ -6,6 +6,7 @@ import { ALIMENTOS, GRUPOS, type Alimento, type GrupoId } from '../data/jogosFin
 import { pontosParciais } from '../lib/pontos';
 import { cores, sombra } from '../theme';
 import { embaralhar } from '../utils/embaralhar';
+import { comAcesso } from '../components/ExigeAcesso';
 
 // Prato equilibrado: escolha um alimento e coloque na parte certa do prato.
 // Metade do prato é de reguladores (2 vagas), um quarto de energéticos e um quarto de construtores.
@@ -25,7 +26,7 @@ function novasOpcoes(): Alimento[] {
 type Prato = Record<GrupoId, Alimento[]>;
 const pratoVazio = (): Prato => ({ reguladores: [], energeticos: [], construtores: [] });
 
-export default function PratoEquilibrado() {
+function PratoEquilibrado() {
   const { width } = useWindowDimensions();
   const tam = Math.min(width - 48, 300);
 
@@ -246,3 +247,5 @@ const styles = StyleSheet.create({
   legenda: { marginTop: 18, gap: 4 },
   legendaTexto: { fontSize: 12.5, color: cores.textoSuave, lineHeight: 17 },
 });
+
+export default comAcesso(PratoEquilibrado, 'finais');

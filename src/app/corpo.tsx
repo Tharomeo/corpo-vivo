@@ -8,6 +8,7 @@ import { ParteCard, SistemaCard, type CardAtual } from '../components/InfoCard';
 import type { Nivel, SistemaId } from '../data/sistemas';
 import { camadaDoSistema, ORGAOS } from '../data/sistemas';
 import { cores, sombra } from '../theme';
+import { comAcesso } from '../components/ExigeAcesso';
 
 type Camada = 'pele' | 'musculos' | 'ossos';
 
@@ -17,7 +18,7 @@ const CAMADAS: { id: Camada; nome: string; cor: string }[] = [
   { id: 'ossos', nome: 'Ossos e órgãos', cor: '#FFD23F' },
 ];
 
-export default function Corpo() {
+function Corpo() {
   const params = useLocalSearchParams<{ nivel?: string; foco?: string }>();
   // "foco" vem da revisão do Me testar: abre direto o cartão daquela parte, com zoom
   const foco = params.foco && ORGAOS[params.foco] ? params.foco : null;
@@ -212,3 +213,5 @@ const styles = StyleSheet.create({
   camadaPonto: { width: 12, height: 12, borderRadius: 6 },
   camadaTexto: { fontSize: 14, fontWeight: '800', color: cores.texto },
 });
+
+export default comAcesso(Corpo);

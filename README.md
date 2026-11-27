@@ -77,6 +77,19 @@ src/
 
 Para adicionar ou corrigir conteúdo, edite `src/data/sistemas.ts`. Cada peça 3D tem um id (ex.: `coracao`) que precisa existir em `ORGAOS`.
 
+## Pagamentos (Stripe)
+
+Anos Iniciais são grátis. Anos Finais: R$ 15/mês (assinatura no cartão) ou R$ 150/ano (pagamento único, cartão ou Pix). Ensino Médio (R$ 35/mês ou R$ 350/ano, inclui os Anos Finais) fica à venda quando tiver conteúdo.
+
+- `supabase/functions/criar-checkout`: abre a página de pagamento da Stripe.
+- `supabase/functions/stripe-webhook`: recebe o aviso de pagamento e libera o acesso (`conceder_acesso`). Publicada com `verify_jwt = false`; a origem é conferida pela assinatura da Stripe.
+- `supabase/functions/portal-cliente`: faturas, troca de cartão e cancelamento.
+
+Segredos das funções (painel da Supabase > Edge Functions > Secrets, nunca no app nem no GitHub):
+`STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `STRIPE_PRECO_FINAIS_MENSAL`, `STRIPE_PRECO_FINAIS_ANUAL`, `STRIPE_PRECO_MEDIO_MENSAL`, `STRIPE_PRECO_MEDIO_ANUAL`, `APP_URL` e `VENDA_MEDIO_ATIVA`.
+
+Webhook na Stripe: `https://<projeto>.supabase.co/functions/v1/stripe-webhook`, com os eventos `checkout.session.completed`, `checkout.session.async_payment_succeeded` e `invoice.paid`.
+
 ## Privacidade
 
 - Política completa em [`PRIVACIDADE.md`](PRIVACIDADE.md) (o mesmo texto da tela Privacidade do app). Contato: corpovivobr@gmail.com.

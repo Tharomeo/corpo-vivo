@@ -7,6 +7,7 @@ import type { QuestaoNaTela, Resposta, Tema } from '../components/prova/tipos';
 import { QUESTOES, type Questao } from '../data/questoes';
 import { SISTEMAS, type Nivel, type SistemaId } from '../data/sistemas';
 import { embaralhar } from '../utils/embaralhar';
+import { comAcesso } from '../components/ExigeAcesso';
 
 function prepararRodada(banco: Questao[], tema: Tema, quantidade: number): QuestaoNaTela[] {
   const escolhidas = tema === 'tudo' ? embaralhar(banco).slice(0, quantidade) : embaralhar(banco.filter((q) => q.sistema === tema));
@@ -16,7 +17,7 @@ function prepararRodada(banco: Questao[], tema: Tema, quantidade: number): Quest
   });
 }
 
-export default function Prova() {
+function Prova() {
   const params = useLocalSearchParams<{ nivel?: string }>();
   const nivel: Nivel = params.nivel === 'finais' ? 'finais' : 'iniciais';
   const banco = useMemo(() => QUESTOES.filter((q) => q.nivel === nivel), [nivel]);
@@ -75,3 +76,5 @@ export default function Prova() {
     />
   );
 }
+
+export default comAcesso(Prova);
