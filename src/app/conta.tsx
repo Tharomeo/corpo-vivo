@@ -1,14 +1,44 @@
 import { router } from 'expo-router';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useState } from 'react';
+import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { TopoJogo } from '../components/jogos/Moldura';
 import { useConta } from '../lib/conta';
 import { cores, sombra } from '../theme';
 
-// Minha conta: apelido, e-mail, plano e sair
+// Minha conta: apelido, e-mail, plano, privacidade (ranking e apagar conta) e sair
 
 export default function MinhaConta() {
-  const { usuario, perfil, modoTeste, sair } = useConta();
+  const { usuario, perfil, modoTeste, sair, salvarRanking, apagarConta } = useConta();
+  const [confirmar, setConfirmar] = useState<null | 'ranking' | 'apagar'>(null);
+  const [ocupado, setOcupado] = useState(false);
+  const [erro, setErro] = useState<string | null>(null);
+  const crianca = perfil?.faixaEtaria === 'menor12';
+  const noRanking = perfil?.mostrarNoRanking ?? true;
+
+  const trocarRanking = async () => {
+    // Criança só entra no ranking com o responsável confirmando
+    if (!noRanking && crianca && confirmar !== 'ranking') return setConfirmar('ranking');
+    setOcupado(true);
+    setErro(null);
+    const e = await salvarRanking(!noRanking);
+    setOcupado(false);
+    setConfirmar(null);
+    if (e) setErro(e);
+  };
+
+  const apagar = async () => {
+    if (confirmar !== 'apagar') return setConfirmar('apagar');
+    setOcupado(true);
+    setErro(null);
+    const e = await apagarConta();
+    setOcupado(false);
+    if (e) {
+      setConfirmar(null);
+      return setErro(e);
+    }
+    router.replace('/entrar');
+  };
   const inicial = (perfil?.apelido ?? '?').charAt(0).toUpperCase();
   const premium = perfil?.plano === 'premium';
 
@@ -48,6 +78,51 @@ export default function MinhaConta() {
           </View>
         )}
 
+        <Text style={styles.secao}>Privacidade</Text>
+        <View style={styles.privacidade}>
+          <Pressable onPress={trocarRanking} disabled={ocupado} style={styles.linha}>
+            <View style={{ flex: 1 }}>
+              <Text style={styles.linhaTitulo}>Aparecer no ranking mundial</Text>
+              <Text style={styles.linhaSub}>{noRanking ? 'Seu apelido e seus pontos aparecem para todos.' : 'Seus pontos ficam só para você.'}</Text>
+            </View>
+            <View style={[styles.chave, noRanking && styles.chaveLigada]}>
+              <View style={[styles.bolinha, noRanking && styles.bolinhaLigada]} />
+            </View>
+          </Pressable>
+          {confirmar === 'ranking' && (
+            <View style={styles.confirma}>
+              <Text style={styles.confirmaTexto}>🧑‍🍼 Responsável: você autoriza mostrar o apelido da criança no ranking mundial?</Text>
+              <View style={styles.confirmaBotoes}>
+                <Pressable onPress={() => setConfirmar(null)} style={[styles.miniBotao, { backgroundColor: '#EEEAF8' }]}>
+                  <Text style={[styles.miniTexto, { color: cores.texto }]}>Não</Text>
+                </Pressable>
+                <Pressable onPress={trocarRanking} style={[styles.miniBotao, { backgroundColor: cores.roxo }]}>
+                  <Text style={styles.miniTexto}>Sim, autorizo</Text>
+                </Pressable>
+              </View>
+            </View>
+          )}
+          <Pressable onPress={() => router.push('/privacidade')} style={styles.linha}>
+            <Text style={[styles.linhaTitulo, { flex: 1 }]}>Política de privacidade</Text>
+            <Text style={styles.seta}>›</Text>
+          </Pressable>
+          <Pressable onPress={apagar} disabled={ocupado} style={styles.linha}>
+            <View style={{ flex: 1 }}>
+              <Text style={[styles.linhaTitulo, { color: '#E0446F' }]}>{confirmar === 'apagar' ? 'Toque de novo para apagar tudo' : 'Apagar minha conta'}</Text>
+              <Text style={styles.linhaSub}>
+                {confirmar === 'apagar' ? 'Apaga o apelido, os pontos e o caderno. Não dá para desfazer.' : 'Apaga a conta e todos os seus dados.'}
+              </Text>
+            </View>
+            {ocupado && confirmar === 'apagar' && <ActivityIndicator color="#E0446F" />}
+          </Pressable>
+          {confirmar === 'apagar' && (
+            <Pressable onPress={() => setConfirmar(null)} style={styles.cancelar}>
+              <Text style={styles.cancelarTexto}>Cancelar</Text>
+            </Pressable>
+          )}
+        </View>
+        {erro && <Text style={styles.erro}>{erro}</Text>}
+
         <Pressable
           onPress={async () => {
             await sair();
@@ -82,6 +157,23 @@ const styles = StyleSheet.create({
   botao: { backgroundColor: cores.roxo, borderRadius: 999, paddingVertical: 15, alignItems: 'center', marginTop: 14 },
   botaoTexto: { color: cores.branco, fontSize: 16, fontWeight: '900' },
   desligado: { opacity: 0.45 },
+  privacidade: { backgroundColor: cores.branco, borderRadius: 22, paddingHorizontal: 16, ...sombra, shadowOpacity: 0.06 },
+  linha: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 15, borderBottomWidth: 1, borderBottomColor: '#F0ECFA' },
+  linhaTitulo: { fontSize: 15.5, fontWeight: '900', color: cores.texto },
+  linhaSub: { fontSize: 13, color: cores.textoSuave, marginTop: 2, lineHeight: 18 },
+  seta: { fontSize: 22, color: cores.textoSuave, fontWeight: '700' },
+  chave: { width: 50, height: 30, borderRadius: 15, backgroundColor: '#D9D3EE', padding: 3 },
+  chaveLigada: { backgroundColor: '#2EC4B6' },
+  bolinha: { width: 24, height: 24, borderRadius: 12, backgroundColor: cores.branco },
+  bolinhaLigada: { transform: [{ translateX: 20 }] },
+  confirma: { backgroundColor: '#FFF4D1', borderRadius: 16, padding: 12, gap: 10, marginTop: 10 },
+  confirmaTexto: { fontSize: 14, lineHeight: 20, fontWeight: '700', color: cores.texto },
+  confirmaBotoes: { flexDirection: 'row', gap: 8, justifyContent: 'flex-end' },
+  miniBotao: { borderRadius: 999, paddingVertical: 8, paddingHorizontal: 14 },
+  miniTexto: { fontSize: 14, fontWeight: '900', color: cores.branco },
+  cancelar: { alignSelf: 'flex-start', paddingVertical: 10 },
+  cancelarTexto: { fontSize: 14, fontWeight: '900', color: cores.textoSuave },
+  erro: { marginTop: 10, color: '#E0446F', fontWeight: '800', fontSize: 14, textAlign: 'center' },
   sair: { marginTop: 28, alignItems: 'center', paddingVertical: 12 },
   sairTexto: { fontSize: 15, fontWeight: '900', color: '#E0446F' },
 });

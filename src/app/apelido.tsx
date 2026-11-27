@@ -1,4 +1,4 @@
-import { router, useLocalSearchParams } from 'expo-router';
+import { Redirect, router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -75,6 +75,9 @@ export default function Apelido() {
       cor: '#C99400',
     },
   }[estado];
+
+  // Primeiro a idade e a privacidade (ex.: o app foi fechado no meio do cadastro)
+  if (!editando && !conta.perfil && !conta.cadastro) return <Redirect href="/idade" />;
 
   return (
     <SafeAreaView style={styles.tela}>

@@ -73,7 +73,7 @@ export function FimDeJogo({
   onDeNovo: () => void;
 }) {
   const d = calcularPontos(resultado);
-  const { usuario, modoTeste } = useConta();
+  const { usuario, modoTeste, perfil } = useConta();
   const comConta = Boolean(usuario) && !modoTeste;
   const [pulo] = useState(() => new Animated.Value(0));
   const [contagem] = useState(() => new Animated.Value(0));
@@ -142,6 +142,9 @@ export function FimDeJogo({
           {envio?.online && (
             <>
               {envio.posicao !== null && <Text style={styles.mundoDestaque}>🌍 Você está em {envio.posicao}º lugar no mundo!</Text>}
+              {envio.posicao === null && perfil?.mostrarNoRanking === false && (
+                <Text style={styles.mundoTexto}>🔒 Você está fora do ranking mundial. Dá para mudar em Minha conta.</Text>
+              )}
               {envio.mediaMundial !== null && <Text style={styles.mundoTexto}>Média mundial deste jogo: {envio.mediaMundial} pontos</Text>}
             </>
           )}

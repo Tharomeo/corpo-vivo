@@ -21,7 +21,7 @@ export type Partida = {
 };
 
 export type LinhaRanking = { jogador_id: string; apelido: string; melhor: number; media: number; partidas: number };
-export type ResultadoEnvio = { posicao: number | null; mediaMundial: number | null; online: boolean };
+export type ResultadoEnvio = { posicao: number | null; mediaMundial: number | null; online: boolean; pontos?: number };
 
 // ---------- Partidas locais ----------
 
@@ -62,20 +62,17 @@ export async function registrarPartida(p: Omit<Partida, 'quando'>, comConta: boo
 
   if (!supabase || !comConta) return { posicao: null, mediaMundial: null, online: false };
   try {
-    const { error } = await supabase.from('jogadas').insert({
-      jogo: p.jogo,
-      nivel: p.nivel,
-      pontos: p.pontos,
-      acertos: p.acertos,
-      erros: p.erros,
-      tempo_ms: p.tempo_ms,
+    // O servidor confere a partida e calcula os pontos (supabase/migracoes/2026-11-25-validacao-e-privacidade.sql)
+    const { data, error } = await supabase.rpc('registrar_jogada', {
+      p_jogo: p.jogo,
+      p_nivel: p.nivel,
+      p_acertos: p.acertos,
+      p_erros: p.erros,
+      p_tempo_ms: Math.round(p.tempo_ms),
     });
-    if (error) return { posicao: null, mediaMundial: null, online: false };
-    const [acima, media] = await Promise.all([
-      supabase.from('ranking').select('jogador_id', { count: 'exact', head: true }).eq('jogo', p.jogo).eq('nivel', p.nivel).gt('melhor', p.pontos),
-      buscarMedia(p.jogo, p.nivel),
-    ]);
-    return { posicao: acima.count === null ? null : acima.count + 1, mediaMundial: media, online: true };
+    if (error || !data) return { posicao: null, mediaMundial: null, online: false };
+    const r = data as { pontos: number; posicao: number | null; media: number | null };
+    return { posicao: r.posicao, mediaMundial: r.media, online: true, pontos: r.pontos };
   } catch {
     return { posicao: null, mediaMundial: null, online: false };
   }

@@ -15,7 +15,6 @@ export default function Entrar() {
   const conta = useConta();
   const [etapa, setEtapa] = useState<'email' | 'codigo'>('email');
   const [email, setEmail] = useState('');
-  const [aceite, setAceite] = useState(false);
   const [codigo, setCodigo] = useState('');
   const [erro, setErro] = useState<string | null>(null);
   const [enviando, setEnviando] = useState(false);
@@ -31,7 +30,7 @@ export default function Entrar() {
   const emailOk = EMAIL.test(email.trim());
 
   const pedirCodigo = async () => {
-    if (!emailOk || !aceite || enviando) return;
+    if (!emailOk || enviando) return;
     setEnviando(true);
     setErro(null);
     const e = await conta.enviarCodigo(email);
@@ -100,17 +99,14 @@ export default function Entrar() {
                 style={styles.campo}
               />
 
-              <Pressable onPress={() => setAceite((a) => !a)} style={styles.aceite} hitSlop={6}>
-                <View style={[styles.caixinha, aceite && styles.caixinhaMarcada]}>{aceite && <Text style={styles.check}>✓</Text>}</View>
-                <Text style={styles.aceiteTexto}>
-                  Tenho 18 anos ou mais, ou estou usando com a autorização do meu responsável, e aceito os termos de uso.
-                </Text>
-              </Pressable>
+              <Text style={styles.aceiteTexto}>
+                Se você tem menos de 12 anos, chame um adulto responsável: ele vai precisar autorizar o uso do app.
+              </Text>
 
               <Pressable
                 onPress={pedirCodigo}
-                disabled={!emailOk || !aceite || enviando}
-                style={({ pressed }) => [styles.botao, (!emailOk || !aceite) && styles.desligado, pressed && styles.apertado]}
+                disabled={!emailOk || enviando}
+                style={({ pressed }) => [styles.botao, !emailOk && styles.desligado, pressed && styles.apertado]}
               >
                 {enviando ? <ActivityIndicator color={cores.branco} /> : <Text style={styles.botaoTexto}>Receber código</Text>}
               </Pressable>
@@ -163,6 +159,9 @@ export default function Entrar() {
           <View style={styles.premium}>
             <Text style={styles.premiumTexto}>🚀 Em breve: Ensino Médio</Text>
           </View>
+          <Pressable onPress={() => router.push('/privacidade')} hitSlop={8} style={{ marginTop: 14, alignSelf: 'center' }}>
+            <Text style={styles.link}>🔒 Política de privacidade</Text>
+          </Pressable>
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
@@ -192,11 +191,7 @@ const styles = StyleSheet.create({
     outlineWidth: 0,
   },
   campoCodigo: { fontSize: 30, letterSpacing: 10, textAlign: 'center', fontWeight: '900' },
-  aceite: { flexDirection: 'row', gap: 12, alignItems: 'flex-start', marginTop: 16 },
-  caixinha: { width: 26, height: 26, borderRadius: 8, borderWidth: 2, borderColor: cores.roxo, alignItems: 'center', justifyContent: 'center', marginTop: 1 },
-  caixinhaMarcada: { backgroundColor: cores.roxo },
-  check: { color: cores.branco, fontWeight: '900', fontSize: 15 },
-  aceiteTexto: { flex: 1, fontSize: 13.5, color: cores.textoSuave, lineHeight: 19, fontWeight: '600' },
+  aceiteTexto: { marginTop: 14, fontSize: 13.5, color: cores.textoSuave, lineHeight: 19, fontWeight: '600' },
   botao: { backgroundColor: cores.roxo, borderRadius: 999, paddingVertical: 17, alignItems: 'center', marginTop: 20, ...sombra },
   botaoTexto: { color: cores.branco, fontSize: 17, fontWeight: '900' },
   desligado: { opacity: 0.4 },

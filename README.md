@@ -77,6 +77,12 @@ src/
 
 Para adicionar ou corrigir conteúdo, edite `src/data/sistemas.ts`. Cada peça 3D tem um id (ex.: `coracao`) que precisa existir em `ORGAOS`.
 
+## Privacidade
+
+- Política completa em [`PRIVACIDADE.md`](PRIVACIDADE.md) (o mesmo texto da tela Privacidade do app). Contato: corpovivobr@gmail.com.
+- Menores de 12 anos só usam com autorização de um responsável (LGPD, art. 14). Crianças começam fora do ranking.
+- Os pontos são calculados e conferidos no servidor (`registrar_jogada`), e a conta pode ser apagada pelo próprio app.
+
 ## Licença e créditos
 
 - Código: [GNU AGPL-3.0](https://www.gnu.org/licenses/agpl-3.0.html) (ver `LICENSE`). Copyright (C) 2026 Thais Romeo.
